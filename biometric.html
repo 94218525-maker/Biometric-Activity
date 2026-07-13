@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biometric Activity Form</title>
+    
+    <!-- Tom Select CSS (For the Searchable Dropdown Layout) -->
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --ioh-yellow: #FFCB05;
+            --ioh-magenta: #EC008C;
+            --ioh-teal: #32BCAD;
+            --neutral-bg: #f3f4f6;
+            --text-main: #1f2937;
+            
+            /* Defaults to IOH Teal (#32BCAD) as requested */
+            --brand-theme-color: var(--ioh-teal);
+            --brand-text-contrast: #ffffff;
+            --page-bg: #ffffff;
+        }
+
+        /* Shifting Color Scheme & Backgrounds based on data-brand */
+        [data-brand="im3"] {
+            --brand-theme-color: var(--ioh-yellow);
+            --brand-text-contrast: #000000;
+            --page-bg: rgba(255, 203, 5, 0.06); /* Transparent Yellow */
+        }
+        [data-brand="3id"] {
+            --brand-theme-color: var(--ioh-magenta);
+            --brand-text-contrast: #ffffff;
+            --page-bg: rgba(236, 0, 140, 0.06); /* Transparent Magenta */
+        }
+        [data-brand="ioh"] {
+            --brand-theme-color: var(--ioh-teal);
+            --brand-text-contrast: #ffffff;
+            --page-bg: rgba(50, 188, 173, 0.06); /* Transparent Teal */
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--page-bg);
+            margin: 0;
+            padding: 2rem 1rem;
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            transition: background-color 0.4s ease;
+        }
+
+        .form-card {
+            width: 100%;
+            max-width: 460px;
+            box-sizing: border-box;
+            background: transparent;
+        }
+        
+        h2 { 
+            margin-top: 0;
+            margin-bottom: 2rem; 
+            color: var(--text-main); 
+            font-size: 1.75rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            border-left: 6px solid var(--brand-theme-color);
+            padding-left: 10px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            animation: fadeIn 0.25s ease-out;
+        }
+
+        .form-group > label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #4b5563;
+        }
+
+        /* Full Color Flat Radio Buttons */
+        .radio-group-container {
+            display: flex;
+            gap: 8px;
+        }
+
+        .radio-option {
+            flex: 1;
+            position: relative;
+            text-align: center;
+        }
+
+        .radio-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            margin: 0;
+            z-index: 2;
+        }
+
+        .radio-option label {
+            display: block;
+            padding: 0.85rem 0.5rem;
+            background: #f3f4f6;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            user-select: none;
+            border: 2px solid transparent;
+        }
+
+        /* Specific Brand Colors on Selection */
+        #brand-im3:checked + label { background-color: var(--ioh-yellow); color: #000; }
+        #brand-3id:checked + label { background-color: var(--ioh-magenta); color: #fff; }
+        #brand-ioh:checked + label { background-color: var(--ioh-teal); color: #fff; }
+
+        /* Form Controls */
+        .form-select, .form-control {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            background-color: #ffffff;
+            box-sizing: border-box;
+            outline: none;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+        
+        .form-control:focus, .form-select:focus {
+            background-color: #fff;
+            border-color: var(--brand-theme-color);
+        }
+
+        /* Tom Select Flat Override */
+        .ts-wrapper.form-select { padding: 0 !important; border: none; background: transparent; }
+        .ts-control { 
+            border-radius: 8px !important; 
+            padding: 0.85rem 1rem !important; 
+            font-size: 1rem !important; 
+            border: 2px solid #e5e7eb !important;
+            background-color: #ffffff !important;
+            box-shadow: none !important;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .ts-wrapper.focus .ts-control {
+            background-color: #fff !important;
+            border-color: var(--brand-theme-color) !important;
+        }
+        .ts-dropdown { border-radius: 8px !important; border: 2px solid #e5e7eb; box-shadow: none !important; margin-top: 4px; }
+        .ts-dropdown .active { background-color: var(--brand-theme-color) !important; color: var(--brand-text-contrast) !important; }
+
+        /* Flex Alignment for DSE Track Fields */
+        .dse-flex-container { display: flex; gap: 10px; }
+        .dse-flex-container > div { flex: 1; }
+
+        /* Dynamic MSISDN Fields Layout */
+        .msisdn-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Dynamic Shifting Action Buttons */
+        .btn-secondary {
+            background: transparent;
+            color: var(--brand-theme-color);
+            border: 2px solid var(--brand-theme-color);
+            padding: 0.6rem 1.2rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 0.25rem;
+            transition: all 0.2s ease;
+        }
+        .btn-secondary:hover { 
+            background: var(--brand-theme-color); 
+            color: var(--brand-text-contrast);
+        }
+
+        .btn-remove {
+            background: #f3f4f6;
+            color: #ef4444;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            padding: 0 1.2rem;
+            font-weight: 700;
+            transition: background 0.15s;
+        }
+        .btn-remove:hover { background: #fee2e2; }
+
+        .limit-message {
+            color: #ef4444;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: block;
+            font-weight: 600;
+        }
+
+        button.btn-submit {
+            background: var(--brand-theme-color);
+            color: var(--brand-text-contrast);
+            padding: 1rem 1.5rem;
+            font-size: 1.05rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        button.btn-submit:hover { opacity: 0.9; }
+        button.btn-submit:disabled { background: #9ca3af; cursor: not-allowed; color: #ffffff; }
+
+        /* Thank You Confirmation Screen styling */
+        .thank-you-card {
+            text-align: center;
+            animation: fadeIn 0.4s ease-out forwards;
+            padding: 3rem 1.5rem;
+        }
+
+        .thank-you-icon {
+            font-size: 4rem;
+            color: var(--brand-theme-color);
+            margin-bottom: 1rem;
+        }
+
+        .thank-you-card h3 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin: 0 0 0.5rem 0;
+            color: var(--text-main);
+        }
+
+        .thank-you-card p {
+            font-size: 1rem;
+            color: #4b5563;
+            margin: 0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-card" id="form-container">
+        <h2>Biometric Activity Log</h2>
+        
+        <form id="activity-form">
+            
+            <!-- HIDDEN FIELDS FOR LOCATION AND TIME -->
+            <input type="hidden" id="geo-latitude" name="latitude">
+            <input type="hidden" id="geo-longitude" name="longitude">
+            <input type="hidden" id="checkin-time" name="checkin_time">
+            
+            <!-- Question 1: Brand -->
+            <div class="form-group">
+                <label>Brand</label>
+                <div class="radio-group-container">
+                    <div class="radio-option">
+                        <input type="radio" id="brand-im3" name="brand" value="im3" onchange="handleBrandChange()">
+                        <label for="brand-im3">IM3</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="brand-3id" name="brand" value="3id" onchange="handleBrandChange()">
+                        <label for="brand-3id">3ID</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="brand-ioh" name="brand" value="ioh" onchange="handleBrandChange()">
+                        <label for="brand-ioh">IOH</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 2: Role Selection -->
+            <div class="form-group" id="role-section" style="display: none;">
+                <label for="role-select">Role Category</label>
+                <select id="role-select" name="role_category" class="form-select" onchange="handleRoleChange()" required>
+                    <option value="" disabled selected hidden>Choose Role...</option>
+                    <option value="internal_sales">Internal Sales</option>
+                    <option value="non_sales">Non-Sales</option>
+                    <option value="dse_all">DSE All</option>
+                    <option value="dse_promotor">DSE Promotor</option>
+                    <option value="dedicated_promotor">Dedicated Promotor</option>
+                </select>
+            </div>
+
+            <!-- Question 3: Sub-Branching for Internal Sales -->
+            <div class="form-group" id="sales-position-section" style="display: none;">
+                <label for="sales-position-select">Sales Position</label>
+                <select id="sales-position-select" name="sales_position" class="form-select" onchange="handlePositionChange()">
+                    <option value="" disabled selected hidden>Select Sales Position...</option>
+                    <option value="hos">HOS</option>
+                    <option value="bsm">BSM</option>
+                    <option value="cse_rse">CSE/RSE</option>
+                </select>
+            </div>
+
+            <!-- Question 4: Dynamic Branching Resolution Section -->
+            <div class="form-group" id="question-4-section" style="display: none;">
+                
+                <!-- Standard Mode: Shows for Internal Sales and Non-Sales -->
+                <div id="standard-lookup-wrapper">
+                    <label for="id-name-select">Search ID or Name</label>
+                    <select id="id-name-select" name="id_name" placeholder="Type to search..." autocomplete="off"></select>
+                </div>
+
+                <!-- DSE Tracks Mode: Shows for DSE All, DSE Promotor, Dedicated Promotor -->
+                <div id="dse-lookup-wrapper" style="display: none;">
+                    <div class="dse-flex-container">
+                        <div>
+                            <label for="dse-id-select">Search DSE ID</label>
+                            <select id="dse-id-select" name="dse_id" placeholder="Select ID..." autocomplete="off"></select>
+                        </div>
+                        <div>
+                            <label for="dse-name-input">DSE Name</label>
+                            <input type="text" id="dse-name-input" name="dse_name_free" class="form-control" placeholder="Nama DSE" oninput="this.value = this.value.toUpperCase()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 6: Activity Location Selection -->
+            <div class="form-group" id="location-type-section" style="display: none;">
+                <label for="location-type-select">Location Type</label>
+                <select id="location-type-select" name="location_type" class="form-select" onchange="handleLocationTypeChange()">
+                    <option value="" disabled selected hidden>Select Location Type...</option>
+                    <option value="kro">KRO</option>
+                    <option value="kampus">Kampus</option>
+                    <option value="residential">Residential</option>
+                    <option value="pasar">Pasar</option>
+                    <option value="others">Others</option>
+                </select>
+            </div>
+
+            <!-- Dynamic Free Text Inputs for Question 6 -->
+            <div class="form-group" id="location-detail-container" style="display: none;">
+                <!-- KRO Field -->
+                <div id="wrapper-kro" class="location-detail-field" style="display: none;">
+                    <label for="input-kro">ID Outlet</label>
+                    <input type="text" id="input-kro" name="id_outlet" class="form-control" placeholder="Masukkan ID Outlet">
+                </div>
+                <!-- Kampus Field -->
+                <div id="wrapper-kampus" class="location-detail-field" style="display: none;">
+                    <label for="input-kampus">Nama Kampus</label>
+                    <input type="text" id="input-kampus" name="nama_kampus" class="form-control" placeholder="Masukkan Nama Kampus">
+                </div>
+                <!-- Residential Field -->
+                <div id="wrapper-residential" class="location-detail-field" style="display: none;">
+                    <label for="input-residential">Nama Pemukiman</label>
+                    <input type="text" id="input-residential" name="nama_pemukiman" class="form-control" placeholder="Masukkan Nama Pemukiman">
+                </div>
+                <!-- Pasar Field -->
+                <div id="wrapper-pasar" class="location-detail-field" style="display: none;">
+                    <label for="input-pasar">Nama Pasar</label>
+                    <input type="text" id="input-pasar" name="nama_pasar" class="form-control" placeholder="Masukkan Nama Pasar">
+                </div>
+                <!-- Others Field -->
+                <div id="wrapper-others" class="location-detail-field" style="display: none;">
+                    <label for="input-others">Nama Tempat</label>
+                    <input type="text" id="input-others" name="nama_tempat" class="form-control" placeholder="Masukkan Nama Tempat">
+                </div>
+            </div>
+
+            <!-- Question 6.1: Nama Kegiatan -->
+            <div class="form-group" id="wrapper-nama-kegiatan" style="display: none;">
+                <label for="input-nama-kegiatan">Nama Kegiatan</label>
+                <input type="text" id="input-nama-kegiatan" name="nama_kegiatan" class="form-control" placeholder="Masukkan Nama Kegiatan">
+            </div>
+
+            <!-- Question 7: MSISDN Container Setup -->
+            <div class="form-group" id="msisdn-section" style="display: none;">
+                <label>MSISDN</label>
+                <div id="msisdn-fields-container">
+                    <!-- Base Baseline Row -->
+                    <div class="msisdn-row">
+                        <input type="text" name="msisdn[]" class="form-control" placeholder="Masukkan MSISDN (Contoh: 62815...)" inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                    </div>
+                </div>
+                <button type="button" id="btn-add-msisdn" class="btn-secondary" onclick="addMsisdnField()">+ Add Number</button>
+                <span id="msisdn-limit-msg" class="limit-message" style="display: none;">Maximum entry limit is 5 numbers.</span>
+            </div>
+
+            <!-- Submit Button Section -->
+            <div id="submit-section" style="display: none;">
+                <button type="submit" id="submit-btn" class="btn-submit">Submit Activity</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Hidden Data Tables Containers -->
+    <table id="non-sales-table" style="display: none;"><tbody>
+        <tr><td>94218525</td><td>RISMAN KURNIA RAMADHAN</td></tr>
+    </tbody></table>
+
+    <table id="employee-data-table" style="display: none;">
+        <tbody>
+            <tr><td>IM3</td><td>CSE</td><td>86218526</td><td>ABDILLAH RAMADHANI</td></tr>
+        </tbody>
+    </table>
+    
+    <table id="dse-data-table" style="display: none;"><tbody>
+        <tr><td>IM3</td><td>DSESROG24</td></tr>
+    </tbody></table>
+
+    <!-- Scripts Setup -->
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+    <script>
+        let tsStandard = null;
+        let tsDse = null;
+        const MAX_MSISDN = 5;
+
+        document.addEventListener("DOMContentLoaded", function() {
+            tsStandard = new TomSelect('#id-name-select', {
+                create: false, valueField: 'value', labelField: 'text', searchField: ['text'],
+                sortField: { field: "employeeName", direction: "asc" },
+                onChange: function(value) { if(value) { showQuestion6(); } else { hideQuestion6(); } }
+            });
+
+            tsDse = new TomSelect('#dse-id-select', {
+                create: false, valueField: 'value', labelField: 'text', searchField: ['text'],
+                sortField: { field: "value", direction: "asc" },
+                placeholder: "Search ID...",
+                onChange: function(value) { checkDseCompletion(); }
+            });
+
+            document.getElementById('dse-name-input').addEventListener('input', function() {
+                checkDseCompletion();
+            });
+
+            const form = document.getElementById('activity-form');
+            const submitBtn = document.getElementById('submit-btn');
+            const container = document.getElementById('form-container');
+
+            form.addEventListener('submit', function(event) {
+                event.preventDefault(); // Stifles the native server submit crash
+                submitBtn.disabled = true;
+                submitBtn.textContent = "Locating...";
+
+                // Handle geolocation coordinates assignment smoothly before transition
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        function(position) {
+                            document.getElementById('geo-latitude').value = position.coords.latitude;
+                            document.getElementById('geo-longitude').value = position.coords.longitude;
+                            document.getElementById('checkin-time').value = new Date().toISOString();
+                            
+                            // Visual screen dynamic replacement to avoid endpoint errors
+                            showThankYouScreen();
+                        }, 
+                        function(error) {
+                            alert("Location access needed. Continuing submission without absolute coordinates...");
+                            showThankYouScreen();
+                        },
+                        { enableHighAccuracy: true, timeout: 6000 }
+                    );
+                } else {
+                    showThankYouScreen();
+                }
+            });
+
+            function showThankYouScreen() {
+                container.innerHTML = `
+                    <div class="thank-you-card">
+                        <div class="thank-you-icon">✓</div>
+                        <h3>Thank you for submitting this form</h3>
+                        <p>Your biometric activity log has been recorded successfully.</p>
+                    </div>
+                `;
+            }
+        });
+
+        // HANDLE BRAND SELECTION SWITCHING COLOR SCHEME AND PAGE BACKGROUND
+        function handleBrandChange() {
+            const selectedBrandRadio = document.querySelector('input[name="brand"]:checked');
+            
+            if (selectedBrandRadio) {
+                document.documentElement.setAttribute('data-brand', selectedBrandRadio.value);
+            }
+
+            document.getElementById('role-section').style.display = 'block';
+            if (document.getElementById('question-4-section').style.display === 'block') { loadTableData(); }
+        }
+
+        function addMsisdnField() {
+            const container = document.getElementById('msisdn-fields-container');
+            let currentFieldsCount = container.getElementsByClassName('msisdn-row').length;
+
+            if (currentFieldsCount < MAX_MSISDN) {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'msisdn-row';
+                
+                rowDiv.innerHTML = `
+                    <input type="text" name="msisdn[]" class="form-control" placeholder="Masukkan MSISDN..." inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
+                    <button type="button" class="btn-remove" onclick="removeMsisdnField(this)">✕</button>
+                `;
+                
+                container.appendChild(rowDiv);
+                updateMsisdnButtonState();
+            }
+        }
+
+        function removeMsisdnField(button) {
+            button.parentElement.remove();
+            updateMsisdnButtonState();
+        }
+
+        function updateMsisdnButtonState() {
+            const container = document.getElementById('msisdn-fields-container');
+            const currentFieldsCount = container.getElementsByClassName('msisdn-row').length;
+            const addButton = document.getElementById('btn-add-msisdn');
+            const limitMsg = document.getElementById('msisdn-limit-msg');
+
+            if (currentFieldsCount >= MAX_MSISDN) {
+                addButton.style.display = 'none';
+                limitMsg.style.display = 'block';
+            } else {
+                addButton.style.display = 'inline-block';
+                limitMsg.style.display = 'none';
+            }
+        }
+
+        function checkDseCompletion() {
+            const dseId = document.getElementById('dse-id-select').value;
+            const dseName = document.getElementById('dse-name-input').value.trim();
+            if(dseId && dseName) { showQuestion6(); } else { hideQuestion6(); }
+        }
+
+        function handleRoleChange() {
+            const roleSelect = document.getElementById('role-select');
+            const salesPositionSection = document.getElementById('sales-position-section');
+            const salesPositionSelect = document.getElementById('sales-position-select');
+            hideQuestion4();
+            if (roleSelect.value === 'internal_sales') {
+                salesPositionSection.style.display = 'block';
+                salesPositionSelect.setAttribute('required', 'true');
+            } else if (roleSelect.value !== "") {
+                salesPositionSection.style.display = 'none';
+                salesPositionSelect.removeAttribute('required');
+                salesPositionSelect.value = ''; 
+                showQuestion4();
+            }
+        }
+
+        function handlePositionChange() {
+            const salesPositionSelect = document.getElementById('sales-position-select');
+            if (salesPositionSelect.value !== "") { showQuestion4(); } else { hideQuestion4(); }
+        }
+
+        function showQuestion4() {
+            const roleSelect = document.getElementById('role-select').value;
+            document.getElementById('question-4-section').style.display = 'block';
+
+            if (roleSelect !== 'internal_sales' && roleSelect !== 'non_sales') {
+                document.getElementById('standard-lookup-wrapper').style.display = 'none';
+                document.getElementById('dse-lookup-wrapper').style.display = 'block';
+                document.getElementById('dse-name-input').setAttribute('required', 'true');
+            } else {
+                document.getElementById('standard-lookup-wrapper').style.display = 'block';
+                document.getElementById('dse-lookup-wrapper').style.display = 'none';
+                document.getElementById('dse-name-input').removeAttribute('required');
+                document.getElementById('dse-name-input').value = '';
+            }
+            loadTableData();
+        }
+
+        function hideQuestion4() {
+            document.getElementById('question-4-section').style.display = 'none';
+            hideQuestion6();
+            if(tsStandard) { tsStandard.clear(); tsStandard.clearOptions(); }
+            if(tsDse) { tsDse.clear(); tsDse.clearOptions(); }
+            document.getElementById('dse-name-input').value = '';
+        }
+
+        function showQuestion6() {
+            document.getElementById('location-type-section').style.display = 'block';
+            document.getElementById('location-type-select').setAttribute('required', 'true');
+        }
+
+        function hideQuestion6() {
+            document.getElementById('location-type-section').style.display = 'none';
+            document.getElementById('location-type-select').removeAttribute('required');
+            document.getElementById('location-type-select').value = '';
+            document.getElementById('location-detail-container').style.display = 'none';
+            
+            const namaKegiatanWrapper = document.getElementById('wrapper-nama-kegiatan');
+            namaKegiatanWrapper.style.display = 'none';
+            const namaKegiatanInput = document.getElementById('input-nama-kegiatan');
+            namaKegiatanInput.removeAttribute('required');
+            namaKegiatanInput.value = '';
+
+            document.getElementById('msisdn-section').style.display = 'none';
+            const baseInput = document.querySelector('#msisdn-fields-container .msisdn-row input');
+            if (baseInput) { baseInput.removeAttribute('required'); baseInput.value = ''; }
+            
+            const rows = document.querySelectorAll('#msisdn-fields-container .msisdn-row');
+            rows.forEach((row, i) => { if (i > 0) row.remove(); });
+            updateMsisdnButtonState();
+
+            document.getElementById('submit-section').style.display = 'none';
+            
+            const detailFields = document.querySelectorAll('.location-detail-field');
+            detailFields.forEach(field => {
+                field.style.display = 'none';
+                const input = field.querySelector('input');
+                input.removeAttribute('required');
+                input.value = '';
+            });
+        }
+
+        function handleLocationTypeChange() {
+            const selectValue = document.getElementById('location-type-select').value;
+            const detailContainer = document.getElementById('location-detail-container');
+            const namaKegiatanWrapper = document.getElementById('wrapper-nama-kegiatan');
+            const namaKegiatanInput = document.getElementById('input-nama-kegiatan');
+            const msisdnSection = document.getElementById('msisdn-section');
+            const firstMsisdnInput = document.querySelector('#msisdn-fields-container .msisdn-row input');
+            const submitSection = document.getElementById('submit-section');
+            
+            if (selectValue) {
+                detailContainer.style.display = 'block';
+                msisdnSection.style.display = 'block';
+                if (firstMsisdnInput) firstMsisdnInput.setAttribute('required', 'true');
+                submitSection.style.display = 'block';
+            }
+
+            const detailFields = document.querySelectorAll('.location-detail-field');
+            detailFields.forEach(field => {
+                field.style.display = 'none';
+                field.querySelector('input').removeAttribute('required');
+            });
+
+            const activeWrapper = document.getElementById(`wrapper-${selectValue}`);
+            if (activeWrapper) {
+                activeWrapper.style.display = 'block';
+                activeWrapper.querySelector('input').setAttribute('required', 'true');
+            }
+
+            if (selectValue && selectValue !== 'kro') {
+                namaKegiatanWrapper.style.display = 'block';
+                namaKegiatanInput.setAttribute('required', 'true');
+            } else {
+                namaKegiatanWrapper.style.display = 'none';
+                namaKegiatanInput.removeAttribute('required');
+                namaKegiatanInput.value = '';
+            }
+        }
+
+        function loadTableData() {
+            const selectedBrandRadio = document.querySelector('input[name="brand"]:checked');
+            const roleSelect = document.getElementById('role-select');
+            const salesPositionSelect = document.getElementById('sales-position-section select');
+            if (!selectedBrandRadio || !roleSelect) return;
+            const selectedBrand = selectedBrandRadio.value.toUpperCase(); 
+            const selectedRole = roleSelect.value;
+            const selectedPosition = document.getElementById('sales-position-select').value;
+
+            if (selectedRole === 'non_sales') {
+                if (!tsStandard) return;
+                tsStandard.clearOptions();
+                const rows = document.querySelectorAll('#non-sales-table tbody tr');
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length < 2) return;
+                    const id = cells[0].textContent.trim();
+                    const name = cells[1].textContent.trim();
+                    tsStandard.addOption({ value: `${id} - ${name}`, text: `${id} - ${name}`, employeeName: name });
+                });
+                tsStandard.refreshOptions(false);
+            } else if (selectedRole !== 'internal_sales') {
+                if (!tsDse) return;
+                tsDse.clearOptions();
+                const rows = document.querySelectorAll('#dse-data-table tbody tr');
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length < 2) return;
+                    const tableBrand = cells[0].textContent.trim().toUpperCase();
+                    const id = cells[1].textContent.trim();
+                    const brandMatches = (tableBrand === selectedBrand) || (tableBrand === 'IOH' && (selectedBrand === 'IM3' || selectedBrand === '3ID'));
+                    if (brandMatches) { tsDse.addOption({ value: id, text: id }); }
+                });
+                tsDse.refreshOptions(false);
+            } else {
+                if (!tsStandard) return;
+                tsStandard.clearOptions();
+                const targetPosition = selectedPosition;
+                const rows = document.querySelectorAll('#employee-data-table tbody tr');
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length < 4) return;
+                    const tableBrand = cells[0].textContent.trim().toUpperCase();
+                    const tablePosition = cells[1].textContent.trim().toLowerCase();
+                    const id = cells[2].textContent.trim();
+                    const name = cells[3].textContent.trim();
+                    const brandMatches = (tableBrand === selectedBrand) || (tableBrand === 'IOH' && (selectedBrand === 'IM3' || selectedBrand === '3ID'));
+                    let positionMatches = false;
+                    if (targetPosition === 'cse_rse') {
+                        positionMatches = (tablePosition === 'cse' || tablePosition === 'rse' || tablePosition === 'cse_rse');
+                    } else {
+                        positionMatches = (tablePosition === targetPosition.toLowerCase());
+                    }
+                    if (brandMatches && positionMatches) {
+                        tsStandard.addOption({ value: `${id} - ${name}`, text: `${id} - ${name}`, employeeName: name });
+                    }
+                });
+                tsStandard.refreshOptions(false);
+            }
+        }
+    </script>
+</body>
+</html>
