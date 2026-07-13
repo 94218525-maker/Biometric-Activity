@@ -290,27 +290,24 @@
                 </div>
             </div>
 
-            <!-- Question 2: Role Selection -->
-            <div class="form-group" id="role-section" style="display: none;">
-                <label for="role-select">Role Category</label>
-                <select id="role-select" name="role_category" class="form-select" onchange="handleRoleChange()" required>
-                    <option value="" disabled selected hidden>Choose Role...</option>
-                    <option value="internal_sales">Internal Sales</option>
+            <!-- New Question: Sales Status -->
+            <div class="form-group" id="sales-status-section" style="display: none;">
+                <label for="sales-status-select">Sales Status</label>
+                <select id="sales-status-select" name="sales_status" class="form-select" onchange="handleSalesStatusChange()">
+                    <option value="" disabled selected hidden>Select Status...</option>
+                    <option value="sales">Sales</option>
                     <option value="non_sales">Non-Sales</option>
-                    <option value="dse_all">DSE All</option>
-                    <option value="dse_promotor">DSE Promotor</option>
-                    <option value="dedicated_promotor">Dedicated Promotor</option>
                 </select>
             </div>
 
-            <!-- Question 3: Sales Position -->
-            <div class="form-group" id="sales-position-section" style="display: none;">
-                <label for="sales-position-select">Sales Position</label>
-                <select id="sales-position-select" name="sales_position" class="form-select" onchange="handlePositionChange()">
-                    <option value="" disabled selected hidden>Select Sales Position...</option>
-                    <option value="hos">HOS</option>
-                    <option value="bsm">BSM</option>
-                    <option value="cse_rse">CSE/RSE</option>
+            <!-- Question 2: Role Selection (Triggered only if Sales is selected) -->
+            <div class="form-group" id="role-section" style="display: none;">
+                <label for="role-select">Role Category</label>
+                <select id="role-select" name="role_category" class="form-select" onchange="handleRoleChange()">
+                    <option value="" disabled selected hidden>Choose Role...</option>
+                    <option value="dse_all">DSE All</option>
+                    <option value="dse_promotor">DSE Promotor</option>
+                    <option value="dedicated_promotor">Dedicated Promotor</option>
                 </select>
             </div>
 
@@ -423,78 +420,6 @@
 <tr><td>87229008</td><td>SARTIKA PUTRI</td></tr>
 <tr><td>91198089</td><td>NIA KURNIATY</td></tr>
 <tr><td>87239669</td><td>CYNTHIA AGNESVIN</td></tr>
-    </tbody></table>
-
-    <table id="employee-data-table" style="display: none;"><tbody>
-        <tr><td>IM3</td><td>CSE</td><td>86218526</td><td>ABDILLAH RAMADHANI</td></tr>
-<tr><td>IM3</td><td>RSE</td><td>AM2405027223</td><td>ADI TIRTA</td></tr>
-<tr><td>3ID</td><td>RSE</td><td>AM2308010163</td><td>ADITA ARIEF SUKMAWAN</td></tr>
-<tr><td>IM3</td><td>CSE</td><td>87146759</td><td>AFIF PAKHRUZ ZAMAN</td></tr>
-<tr><td>IM3</td><td>HOS</td><td>74014830</td><td>AGUSWAN</td></tr>
-<tr><td>3ID</td><td>BSM</td><td>72228601</td><td>ALEX SARIPUDIN</td></tr>
-<tr><td>IM3</td><td>CSE</td><td>90208335</td><td>ALEXANDER ROBERT SUSANTO PUTRO</td></tr>
-<tr><td>3ID</td><td>RSE</td><td>AM0272260701</td><td>ANDRI AKHMAD FIRMANSYAH</td></tr>
-<tr><td>IM3</td><td>CSE</td><td>90167460</td><td>ANDRI PERMANA</td></tr>
-<tr><td>IM3</td><td>CSE</td><td>93208253</td><td>ANGGA ABQORI BACHRIAN</td></tr>
-<tr><td>IM3</td><td>BSM</td><td>80086109</td><td>ARIA WIRABUANA</td></tr>
-<tr><td>IM3</td><td>CSE</td><td>89208281</td><td>ARLY GUNTARA</td></tr>
-<tr><td>3ID</td><td>RSE</td><td>AM0030250701</td><td>ASEP SAEPUL MIKDAR</td></tr>
-<tr><td>IM3</td><td>RSE</td><td>AM2405027453</td><td>ATUS SUSANTO</td></tr>
-<tr><td>IM3</td><td>CSE</td><td>81126393</td><td>BURHAN ISNAENI</td></tr>
-<tr><td>IM3</td><td>RSE</td><td>AM2308013913</td><td>CHAERUMAN</td></tr>
-<tr><td>IM3</td><td>HOS</td><td>87146756</td><td>DANDY FARHAN NUGRAHA</td></tr>
-<tr><td>IM3</td><td>BSM</td><td>83075881</td><td>DANY ROCHMANA</td></tr>
-<tr><td>IOH</td><td>BSM</td><td>78228904</td><td>DENNY FRIANTONY</td></tr>
-<tr><td>IOH</td><td>RSE</td><td>AM2308014273</td><td>DEYAN KURNIA PUTRA</td></tr>
-<tr><td>3ID</td><td>BSM</td><td>82198100</td><td>DHODI ROHANDI</td></tr>
-<tr><td>IM3</td><td>RSE</td><td>AM240502819I</td><td>DODY SUHARYOTO</td></tr>
-<tr><td>3ID</td><td>BSM</td><td>77228701</td><td>DWI DANI RAMDANI</td></tr>
-<tr><td>IOH</td><td>CSE</td><td>87229587</td><td>EDWIN FEBRIANA</td></tr>
-<tr><td>IM3</td><td>BSM</td><td>80126397</td><td>ERI PUJIYADI</td></tr>
-<tr><td>3ID</td><td>BSM</td><td>79035609</td><td>ERRENS AMUS LETWORY</td></tr>
-<tr><td>IM3</td><td>CSE</td><td>92208241</td><td>ERRIYANTO SYAHRIALPUTRA</td></tr>
-<tr><td>IM3</td><td>CSE</td><td>89218530</td><td>FEMMY HADIWARNA SOETOMO</td></tr>
-<tr><td>IM3</td><td>CSE</td><td>92250825</td><td>FERBI DARUSSALAM</td></tr>
-<tr><td>IOH</td><td>RSE</td><td>AM2308011433</td><td>FIKRI FIRMANSYAH</td></tr>
-<tr><td>IM3</td><td>CSE</td><td>94208275</td><td>GIGIH YUDHA WISESA</td></tr>
-<tr><td>3ID</td><td>RSE</td><td>AM2308011643</td><td>HAMDAN SUPARNA</td></tr>
-<tr><td>3ID</td><td>RSE</td><td>AM2308011693</td><td>HENDRA PRAWIRA</td></tr>
-<tr><td>IM3</td><td>BSM</td><td>72974492</td><td>HERLAMBANG PRIAMBODO</td></tr>
-<tr><td>IM3</td><td>CSE</td><td>95208333</td><td>IGFAR CITA</td></tr>
-<tr><td>IOH</td><td>CSE</td><td>83228718</td><td>IKA JATNIKA</td></tr>
-<tr><td>3ID</td><td>RSE</td><td>AM2308011823</td><td>IMAN SAEFUL ROCHMAN</td></tr>
-<tr><td>IM3</td><td>CSE</td><td>76025125</td><td>IRWAN GUNAWAN</td></tr>
-<tr><td>3ID</td><td>BSM</td><td>78229222</td><td>JUSUF WARDANA</td></tr>
-<tr><td>IM3</td><td>CSE</td><td>78229236</td><td>LUKMANNUL HAKIM</td></tr>
-<tr><td>IM3</td><td>RSE</td><td>AM240502836I</td><td>M IMAN NUL HAKIM</td></tr>
-<tr><td>3ID</td><td>HOS</td><td>80229251</td><td>MAD KHOIRI</td></tr>
-<tr><td>3ID</td><td>HOS</td><td>80229179</td><td>MAHARDI KURNIAWAN</td></tr>
-<tr><td>IM3</td><td>RSE</td><td>AM2308012223</td><td>MICHAEL ANDRI S</td></tr>
-<tr><td>IOH</td><td>RSE</td><td>AM2309015633</td><td>MOCH ABDUL FATAH ASSOLEH</td></tr>
-<tr><td>3ID</td><td>RSE</td><td>AM2309015733</td><td>MOHAMMAD FAJAR SHODIQ</td></tr>
-<tr><td>3ID</td><td>RSE</td><td>AM0265260701</td><td>MOHAMMAD RAHMATULLAH</td></tr>
-<tr><td>IM3</td><td>CSE</td><td>89250667</td><td>MUHAMAD SIDIK</td></tr>
-<tr><td>3ID</td><td>RSE</td><td>AM2308014193</td><td>MUHAMMAD SOLICHIN</td></tr>
-<tr><td>IM3</td><td>CSE</td><td>92229388</td><td>NANCA OCTAVIANO PUTRA ATMAJA</td></tr>
-<tr><td>IM3</td><td>BSM</td><td>75003259</td><td>NAZWIR EPISKA LUBIS</td></tr>
-<tr><td>3ID</td><td>RSE</td><td>AM2308012613</td><td>NICOLAUS IRWAN</td></tr>
-<tr><td>3ID</td><td>RSE</td><td>AM2308012693</td><td>NURUL BAHTIAR</td></tr>
-<tr><td>3ID</td><td>RSE</td><td>AM2308014203</td><td>PRIMADANA</td></tr>
-<tr><td>IOH</td><td>CSE</td><td>86146780</td><td>RAHMAT SYAEFULLAH</td></tr>
-<tr><td>IM3</td><td>CSE</td><td>87250745</td><td>RANDY NAPUTRA</td></tr>
-<tr><td>IM3</td><td>BSM</td><td>84228927</td><td>RICARDO JEFRY MANAHAN</td></tr>
-<tr><td>3ID</td><td>RSE</td><td>AM2309014703</td><td>RICHARD FRANCOIS PATTILEUW</td></tr>
-<tr><td>3ID</td><td>RSE</td><td>AM2308012953</td><td>RIVALDI TANJUNG</td></tr>
-<tr><td>3ID</td><td>RSE</td><td>AM2308013893</td><td>RYAN ADRIADI</td></tr>
-<tr><td>IOH</td><td>RSE</td><td>AM2308013023</td><td>RYAN SETIADI</td></tr>
-<tr><td>IM3</td><td>CSE</td><td>94208280</td><td>SOFIA FARIDAH</td></tr>
-<tr><td>IOH</td><td>BSM</td><td>73954007</td><td>SOFYAN HAFIAN</td></tr>
-<tr><td>3ID</td><td>BSM</td><td>73942214</td><td>SUWARNO</td></tr>
-<tr><td>IM3</td><td>RSE</td><td>AM2308013223</td><td>SYERLY FRYCHILIA</td></tr>
-<tr><td>3ID</td><td>RSE</td><td>AM0257260615</td><td>TATANG SUTARYADI</td></tr>
-<tr><td>IOH</td><td>RSE</td><td>AM2309015083</td><td>TAUFIK AKBAR</td></tr>
-<tr><td>IM3</td><td>RSE</td><td>AM2309014693</td><td>TERI HENDRA</td></tr>
-<tr><td>3ID</td><td>RSE</td><td>AM2308013473</td><td>YOHAN ANDREA SARAGI</td></tr>
     </tbody></table>
     
     <table id="dse-data-table" style="display: none;"><tbody>
@@ -1129,7 +1054,6 @@
             function sendDataToGoogleSheets() {
                 submitBtn.textContent = "Submitting Data...";
                 
-                // PASTE YOUR FRESH GENERATED DEPLOYMENT /exec URL HERE:
                 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxTatYQAjbSDH2fU1aJya-KLwobO1_kxFhj6rABM8IFJwh475P2NXofa1B1maJCiXXI/exec";
 
                 const formData = new FormData(form);
@@ -1139,7 +1063,6 @@
                     formObject[key] = value;
                 });
 
-                // Pull unique individual location detail elements
                 const locType = document.getElementById('location-type-select').value;
                 let locDetail = "";
                 if(locType === 'kro') locDetail = document.getElementById('input-kro').value;
@@ -1149,7 +1072,6 @@
                 if(locType === 'others') locDetail = document.getElementById('input-others').value;
                 formObject['location_detail'] = locDetail;
 
-                // Explicitly read rows 1 through 5 and map directly to numbered keys
                 for (let i = 1; i <= 5; i++) {
                     const inputEl = document.getElementById(`msisdn-input-${i}`);
                     formObject[`msisdn${i}`] = inputEl ? inputEl.value.trim() : "";
@@ -1188,98 +1110,55 @@
             if (selectedBrandRadio) {
                 document.documentElement.setAttribute('data-brand', selectedBrandRadio.value);
             }
-            document.getElementById('role-section').style.display = 'block';
-            if (document.getElementById('question-4-section').style.display === 'block') { loadTableData(); }
-        }
-
-        function addMsisdnField() {
-            const container = document.getElementById('msisdn-fields-container');
-            const currentRows = container.getElementsByClassName('msisdn-row');
             
-            // Find missing slots from 1 to 5 to avoid duplicate IDs
-            const currentIndices = Array.from(currentRows).map(row => parseInt(row.getAttribute('data-index')));
-            let nextIndex = 1;
-            for (let i = 1; i <= 5; i++) {
-                if (!currentIndices.includes(i)) {
-                    nextIndex = i;
-                    break;
-                }
-            }
-
-            if (currentRows.length < MAX_MSISDN) {
-                const rowDiv = document.createElement('div');
-                rowDiv.className = 'msisdn-row';
-                rowDiv.setAttribute('data-index', nextIndex);
-                rowDiv.innerHTML = `
-                    <span class="msisdn-prefix">MSISDN ${nextIndex}</span>
-                    <input type="text" id="msisdn-input-${nextIndex}" class="form-control" placeholder="Masukkan MSISDN..." inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
-                    <button type="button" class="btn-remove" onclick="removeMsisdnField(this)">✕</button>
-                `;
-                container.appendChild(rowDiv);
-                updateMsisdnButtonState();
-            }
-        }
-
-        function removeMsisdnField(button) {
-            button.parentElement.remove();
-            updateMsisdnButtonState();
-        }
-
-        function updateMsisdnButtonState() {
-            const container = document.getElementById('msisdn-fields-container');
-            const currentFieldsCount = container.getElementsByClassName('msisdn-row').length;
-            const addButton = document.getElementById('btn-add-msisdn');
-            const limitMsg = document.getElementById('msisdn-limit-msg');
-
-            if (currentFieldsCount >= MAX_MSISDN) {
-                addButton.style.display = 'none';
-                limitMsg.style.display = 'block';
-            } else {
-                addButton.style.display = 'inline-block';
-                limitMsg.style.display = 'none';
-            }
-        }
-
-        function checkDseCompletion() {
-            const dseId = document.getElementById('dse-id-select').value;
-            const dseName = document.getElementById('dse-name-input').value.trim();
-            if(dseId && dseName) { showQuestion6(); } else { hideQuestion6(); }
-        }
-
-        function handleRoleChange() {
-            const roleSelect = document.getElementById('role-select');
-            const salesPositionSection = document.getElementById('sales-position-section');
-            const salesPositionSelect = document.getElementById('sales-position-select');
+            // RESET CASCADING DOWNSTREAM
+            document.getElementById('sales-status-select').value = '';
+            document.getElementById('role-select').value = '';
+            document.getElementById('role-section').style.display = 'none';
+            document.getElementById('role-select').removeAttribute('required');
             hideQuestion4();
-            if (roleSelect.value === 'internal_sales') {
-                salesPositionSection.style.display = 'block';
-                salesPositionSelect.setAttribute('required', 'true');
-            } else if (roleSelect.value !== "") {
-                salesPositionSection.style.display = 'none';
-                salesPositionSelect.removeAttribute('required');
-                salesPositionSelect.value = ''; 
+            
+            document.getElementById('sales-status-section').style.display = 'block';
+            document.getElementById('sales-status-select').setAttribute('required', 'true');
+        }
+
+        function handleSalesStatusChange() {
+            const status = document.getElementById('sales-status-select').value;
+            
+            // RESET CASCADING DOWNSTREAM
+            document.getElementById('role-select').value = '';
+            hideQuestion4();
+
+            if (status === 'sales') {
+                document.getElementById('role-section').style.display = 'block';
+                document.getElementById('role-select').setAttribute('required', 'true');
+            } else if (status === 'non_sales') {
+                document.getElementById('role-section').style.display = 'none';
+                document.getElementById('role-select').removeAttribute('required');
                 showQuestion4();
             }
         }
 
-        function handlePositionChange() {
-            const salesPositionSelect = document.getElementById('sales-position-select');
-            if (salesPositionSelect.value !== "") { showQuestion4(); } else { hideQuestion4(); }
+        function handleRoleChange() {
+            hideQuestion4();
+            if (document.getElementById('role-select').value !== "") {
+                showQuestion4();
+            }
         }
 
         function showQuestion4() {
-            const roleSelect = document.getElementById('role-select').value;
+            const status = document.getElementById('sales-status-select').value;
             document.getElementById('question-4-section').style.display = 'block';
 
-            if (roleSelect !== 'internal_sales' && roleSelect !== 'non_sales') {
-                document.getElementById('standard-lookup-wrapper').style.display = 'none';
-                document.getElementById('dse-lookup-wrapper').style.display = 'block';
-                document.getElementById('dse-name-input').setAttribute('required', 'true');
-            } else {
+            if (status === 'non_sales') {
                 document.getElementById('standard-lookup-wrapper').style.display = 'block';
                 document.getElementById('dse-lookup-wrapper').style.display = 'none';
                 document.getElementById('dse-name-input').removeAttribute('required');
                 document.getElementById('dse-name-input').value = '';
+            } else {
+                document.getElementById('standard-lookup-wrapper').style.display = 'none';
+                document.getElementById('dse-lookup-wrapper').style.display = 'block';
+                document.getElementById('dse-name-input').setAttribute('required', 'true');
             }
             loadTableData();
         }
@@ -1290,6 +1169,12 @@
             if(tsStandard) { tsStandard.clear(); tsStandard.clearOptions(); }
             if(tsDse) { tsDse.clear(); tsDse.clearOptions(); }
             document.getElementById('dse-name-input').value = '';
+        }
+
+        function checkDseCompletion() {
+            const dseId = document.getElementById('dse-id-select').value;
+            const dseName = document.getElementById('dse-name-input').value.trim();
+            if(dseId && dseName) { showQuestion6(); } else { hideQuestion6(); }
         }
 
         function showQuestion6() {
@@ -1368,18 +1253,61 @@
             }
         }
 
+        function addMsisdnField() {
+            const container = document.getElementById('msisdn-fields-container');
+            const currentRows = container.getElementsByClassName('msisdn-row');
+            
+            const currentIndices = Array.from(currentRows).map(row => parseInt(row.getAttribute('data-index')));
+            let nextIndex = 1;
+            for (let i = 1; i <= 5; i++) {
+                if (!currentIndices.includes(i)) {
+                    nextIndex = i;
+                    break;
+                }
+            }
+
+            if (currentRows.length < MAX_MSISDN) {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'msisdn-row';
+                rowDiv.setAttribute('data-index', nextIndex);
+                rowDiv.innerHTML = `
+                    <span class="msisdn-prefix">MSISDN ${nextIndex}</span>
+                    <input type="text" id="msisdn-input-${nextIndex}" class="form-control" placeholder="Masukkan MSISDN..." inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
+                    <button type="button" class="btn-remove" onclick="removeMsisdnField(this)">✕</button>
+                `;
+                container.appendChild(rowDiv);
+                updateMsisdnButtonState();
+            }
+        }
+
+        function removeMsisdnField(button) {
+            button.parentElement.remove();
+            updateMsisdnButtonState();
+        }
+
+        function updateMsisdnButtonState() {
+            const container = document.getElementById('msisdn-fields-container');
+            const currentFieldsCount = container.getElementsByClassName('msisdn-row').length;
+            const addButton = document.getElementById('btn-add-msisdn');
+            const limitMsg = document.getElementById('msisdn-limit-msg');
+
+            if (currentFieldsCount >= MAX_MSISDN) {
+                addButton.style.display = 'none';
+                limitMsg.style.display = 'block';
+            } else {
+                addButton.style.display = 'inline-block';
+                limitMsg.style.display = 'none';
+            }
+        }
+
         function loadTableData() {
             const selectedBrandRadio = document.querySelector('input[name="brand"]:checked');
-            const roleSelect = document.getElementById('role-select');
+            const status = document.getElementById('sales-status-select').value;
             
-            if (!selectedBrandRadio || !roleSelect) return;
+            if (!selectedBrandRadio || !status) return;
             const selectedBrand = selectedBrandRadio.value.toUpperCase(); 
-            const selectedRole = roleSelect.value;
-            
-            const salesPositionSelect = document.getElementById('sales-position-select');
-            const selectedPosition = salesPositionSelect ? salesPositionSelect.value : '';
 
-            if (selectedRole === 'non_sales') {
+            if (status === 'non_sales') {
                 if (!tsStandard) return;
                 tsStandard.clearOptions();
                 const rows = document.querySelectorAll('#non-sales-table tbody tr');
@@ -1391,7 +1319,7 @@
                     tsStandard.addOption({ value: `${id} - ${name}`, text: `${id} - ${name}`, employeeName: name });
                 });
                 tsStandard.refreshOptions(false);
-            } else if (selectedRole !== 'internal_sales') {
+            } else {
                 if (!tsDse) return;
                 tsDse.clearOptions();
                 const rows = document.querySelectorAll('#dse-data-table tbody tr');
@@ -1404,32 +1332,7 @@
                     if (brandMatches) { tsDse.addOption({ value: id, text: id }); }
                 });
                 tsDse.refreshOptions(false);
-            } else {
-                if (!tsStandard) return;
-                tsStandard.clearOptions();
-                const targetPosition = selectedPosition;
-                const rows = document.querySelectorAll('#employee-data-table tbody tr');
-                rows.forEach(row => {
-                    const cells = row.querySelectorAll('td');
-                    if (cells.length < 4) return;
-                    const tableBrand = cells[0].textContent.trim().toUpperCase();
-                    const tablePosition = cells[1].textContent.trim().toLowerCase();
-                    const id = cells[2].textContent.trim();
-                    const name = cells[3].textContent.trim();
-                    const brandMatches = (tableBrand === selectedBrand) || (tableBrand === 'IOH' && (selectedBrand === 'IM3' || selectedBrand === '3ID'));
-                    let positionMatches = false;
-                    if (targetPosition === 'cse_rse') {
-                        positionMatches = (tablePosition === 'cse' || tablePosition === 'rse' || tablePosition === 'cse_rse');
-                    } else {
-                        positionMatches = (tablePosition === targetPosition.toLowerCase());
-                    }
-                    if (brandMatches && positionMatches) {
-                        tsStandard.addOption({ value: `${id} - ${name}`, text: `${id} - ${name}`, employeeName: name });
-                    }
-                });
-                tsStandard.refreshOptions(false);
             }
         }
     </script>
 </body>
-</html>
