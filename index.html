@@ -290,28 +290,48 @@
                 </div>
             </div>
 
-            <!-- New Question: Sales Status -->
+            <!-- Question: Sales Status -->
             <div class="form-group" id="sales-status-section" style="display: none;">
                 <label for="sales-status-select">Sales Status</label>
                 <select id="sales-status-select" name="sales_status" class="form-select" onchange="handleSalesStatusChange()">
-                    <option value="" disabled selected hidden>Select Status...</option>
+                    <option value="" disabled selected hidden>Choose Status...</option>
                     <option value="sales">Sales</option>
                     <option value="non_sales">Non-Sales</option>
                 </select>
             </div>
 
-            <!-- Question 2: Role Selection (Triggered only if Sales is selected) -->
+            <!-- Question: Dedicated Non-Sales ID or Name Search -->
+            <div class="form-group" id="non-sales-lookup-wrapper" style="display: none;">
+                <label for="non-sales-select">Search Non-Sales ID or Name</label>
+                <select id="non-sales-select" name="id_name_non_sales" placeholder="Type to search non-sales..." autocomplete="off">
+                    <option value=""></option>
+                </select>
+            </div>
+
+            <!-- Question 2: Role Selection (Only for Sales Status = Sales) -->
             <div class="form-group" id="role-section" style="display: none;">
                 <label for="role-select">Role Category</label>
                 <select id="role-select" name="role_category" class="form-select" onchange="handleRoleChange()">
                     <option value="" disabled selected hidden>Choose Role...</option>
+                    <option value="internal_sales">Internal Sales</option>
                     <option value="dse_all">DSE All</option>
                     <option value="dse_promotor">DSE Promotor</option>
                     <option value="dedicated_promotor">Dedicated Promotor</option>
                 </select>
             </div>
 
-            <!-- Question 4: Dynamic Lookup Wrapper -->
+            <!-- Question 3: Sales Position -->
+            <div class="form-group" id="sales-position-section" style="display: none;">
+                <label for="sales-position-select">Sales Position</label>
+                <select id="sales-position-select" name="sales_position" class="form-select" onchange="handlePositionChange()">
+                    <option value="" disabled selected hidden>Select Sales Position...</option>
+                    <option value="hos">HOS</option>
+                    <option value="bsm">BSM</option>
+                    <option value="cse_rse">CSE/RSE</option>
+                </select>
+            </div>
+
+            <!-- Question 4: Dynamic Lookup Wrapper (Only for Sales) -->
             <div class="form-group" id="question-4-section" style="display: none;">
                 <div id="standard-lookup-wrapper">
                     <label for="id-name-select">Search ID or Name</label>
@@ -402,605 +422,22 @@
 
     <!-- Hidden Data References -->
     <table id="non-sales-table" style="display: none;"><tbody>
-        <tr><td>72015056</td><td>ERIC DANARI</td></tr>
-<tr><td>74013503</td><td>RADITYO PRAMUDITO</td></tr>
-<tr><td>83228847</td><td>GOLDIE BAMBANG Y</td></tr>
-<tr><td>92239693</td><td>GEBRINA YOVANDA</td></tr>
-<tr><td>75002386</td><td>WINDY YULISTIANA</td></tr>
-<tr><td>89167463</td><td>SENNA SYEPTIAN</td></tr>
-<tr><td>94218525</td><td>RISMAN KURNIA RAMADHAN</td></tr>
-<tr><td>81146805</td><td>YANI RACHMAWATI</td></tr>
-<tr><td>86167455</td><td>INDRA NUGRAHA</td></tr>
-<tr><td>20239691</td><td>ATHAYA MAHARANI PUTRI</td></tr>
-<tr><td>75014901</td><td>FIRNA FIDUSIA</td></tr>
-<tr><td>81136599</td><td>M. ADE SYARIFUDDIN</td></tr>
-<tr><td>83240472</td><td>RIZA YULISTINA</td></tr>
-<tr><td>93261012</td><td>ADITYO DWI ANGGORO</td></tr>
-<tr><td>78229014</td><td>GENTA PRABA TRESNA</td></tr>
-<tr><td>87229008</td><td>SARTIKA PUTRI</td></tr>
-<tr><td>91198089</td><td>NIA KURNIATY</td></tr>
-<tr><td>87239669</td><td>CYNTHIA AGNESVIN</td></tr>
+        <tr><td>94218525</td><td>RISMAN KURNIA RAMADHAN</td></tr>
+    </tbody></table>
+
+    <table id="employee-data-table" style="display: none;"><tbody>
+        <tr><td>IM3</td><td>CSE</td><td>86218526</td><td>ABDILLAH RAMADHANI</td></tr>
     </tbody></table>
     
     <table id="dse-data-table" style="display: none;"><tbody>
         <tr><td>IM3</td><td>2613050525</td></tr>
-<tr><td>IM3</td><td>2613051290</td></tr>
-<tr><td>IM3</td><td>2613051292</td></tr>
-<tr><td>IM3</td><td>2613051293</td></tr>
-<tr><td>IM3</td><td>CSOJGL-02</td></tr>
-<tr><td>IM3</td><td>CSOJGL-04</td></tr>
-<tr><td>IM3</td><td>CSOJGL-07</td></tr>
-<tr><td>IM3</td><td>CSOJGL-11</td></tr>
-<tr><td>IM3</td><td>CSOJGL-12</td></tr>
-<tr><td>IM3</td><td>CSOJGL-14</td></tr>
-<tr><td>IM3</td><td>CSOJGL-22</td></tr>
-<tr><td>IM3</td><td>DSEGNNI01</td></tr>
-<tr><td>IM3</td><td>DSECRU01</td></tr>
-<tr><td>IM3</td><td>DSECRU02</td></tr>
-<tr><td>IM3</td><td>DSECRU03</td></tr>
-<tr><td>IM3</td><td>DSECRU04</td></tr>
-<tr><td>IM3</td><td>CSOBGRA03</td></tr>
-<tr><td>IM3</td><td>AWALHID</td></tr>
-<tr><td>IM3</td><td>DENIMAR</td></tr>
-<tr><td>IM3</td><td>DSECJRK01</td></tr>
-<tr><td>IM3</td><td>DSECJRK04</td></tr>
-<tr><td>IM3</td><td>DSECJRK05</td></tr>
-<tr><td>IM3</td><td>DSECJRK06</td></tr>
-<tr><td>IM3</td><td>DSECJRK07</td></tr>
-<tr><td>IM3</td><td>DSECJRK08</td></tr>
-<tr><td>IM3</td><td>DSECJRK09</td></tr>
-<tr><td>IM3</td><td>DSECJRK10</td></tr>
-<tr><td>IM3</td><td>DSECJRK11</td></tr>
-<tr><td>IM3</td><td>ENDANGS</td></tr>
-<tr><td>IM3</td><td>MUHAMADTEGUH</td></tr>
-<tr><td>IM3</td><td>DSECBNG14</td></tr>
-<tr><td>IM3</td><td>DSECBNG15</td></tr>
-<tr><td>IM3</td><td>DSECBNG16</td></tr>
-<tr><td>IM3</td><td>DSECBNG19</td></tr>
-<tr><td>IM3</td><td>DSECBNG20</td></tr>
-<tr><td>IM3</td><td>DSECBNG21</td></tr>
-<tr><td>IM3</td><td>DSECBNG22</td></tr>
-<tr><td>IM3</td><td>DSECBNG23</td></tr>
-<tr><td>IM3</td><td>DSECBNG24</td></tr>
-<tr><td>IM3</td><td>2613051120</td></tr>
-<tr><td>IM3</td><td>CSOSDP3</td></tr>
-<tr><td>IM3</td><td>DSELUIG12</td></tr>
-<tr><td>IM3</td><td>DSELUIG14</td></tr>
-<tr><td>IM3</td><td>DSELUIG15</td></tr>
-<tr><td>IM3</td><td>DSELUIG22</td></tr>
-<tr><td>IM3</td><td>DSESKJA01</td></tr>
-<tr><td>IM3</td><td>DSESKJA02</td></tr>
-<tr><td>IM3</td><td>DSESKJA03</td></tr>
-<tr><td>IM3</td><td>DSELUIG02</td></tr>
-<tr><td>IM3</td><td>DSELUIG03</td></tr>
-<tr><td>IM3</td><td>DSELUIG04</td></tr>
-<tr><td>IM3</td><td>DSELUIG05</td></tr>
-<tr><td>IM3</td><td>DSELUIG06</td></tr>
-<tr><td>IM3</td><td>DSELUIG08</td></tr>
-<tr><td>IM3</td><td>DSELUIG21</td></tr>
-<tr><td>IM3</td><td>DSEKTBR25</td></tr>
-<tr><td>IM3</td><td>DSEKTBR27</td></tr>
-<tr><td>IM3</td><td>DSEKTBR28</td></tr>
-<tr><td>IM3</td><td>DSEKTBR30</td></tr>
-<tr><td>IM3</td><td>DSEKTBR32</td></tr>
-<tr><td>IM3</td><td>DSEKTBR33</td></tr>
-<tr><td>IM3</td><td>DSEKTBR34</td></tr>
-<tr><td>IM3</td><td>DSEKTBR35</td></tr>
-<tr><td>IM3</td><td>DSEPRNG01</td></tr>
-<tr><td>IM3</td><td>DSEPRNG03</td></tr>
-<tr><td>IM3</td><td>DSEPRNG04</td></tr>
-<tr><td>IM3</td><td>DSEPRNG05</td></tr>
-<tr><td>IM3</td><td>DSEPRNG06</td></tr>
-<tr><td>IM3</td><td>DSEPRNG07</td></tr>
-<tr><td>IM3</td><td>DSEPRNG08</td></tr>
-<tr><td>IM3</td><td>DSEPRNG09</td></tr>
-<tr><td>IM3</td><td>DSEPRNG12</td></tr>
-<tr><td>IM3</td><td>CSO2023105</td></tr>
-<tr><td>IM3</td><td>CSO1DMS</td></tr>
-<tr><td>IM3</td><td>CSO3DMS</td></tr>
-<tr><td>IM3</td><td>CVSCJS006</td></tr>
-<tr><td>IM3</td><td>CVSCJS008</td></tr>
-<tr><td>IM3</td><td>CVSCJS03</td></tr>
-<tr><td>IM3</td><td>CVSCJS007</td></tr>
-<tr><td>IM3</td><td>CVSCJS011</td></tr>
-<tr><td>IM3</td><td>CVSCJS013</td></tr>
-<tr><td>IM3</td><td>CVSCJS014</td></tr>
-<tr><td>IM3</td><td>CVSCJS015</td></tr>
-<tr><td>IM3</td><td>CVSCJS02</td></tr>
-<tr><td>IM3</td><td>CVSCJS001</td></tr>
-<tr><td>IM3</td><td>CVSCJS004</td></tr>
-<tr><td>IM3</td><td>CVSCJS05</td></tr>
-<tr><td>IM3</td><td>CVSCJU006</td></tr>
-<tr><td>IM3</td><td>SDPCSO12071</td></tr>
-<tr><td>IM3</td><td>CSO20221201</td></tr>
-<tr><td>IM3</td><td>CSOSDP1201</td></tr>
-<tr><td>IM3</td><td>CVSCJU001</td></tr>
-<tr><td>IM3</td><td>CVSCJU002</td></tr>
-<tr><td>IM3</td><td>CVSCJU014</td></tr>
-<tr><td>IM3</td><td>CVSCJU019</td></tr>
-<tr><td>IM3</td><td>DSECJRT001</td></tr>
-<tr><td>IM3</td><td>CVSCJU003</td></tr>
-<tr><td>IM3</td><td>CVSCJU005</td></tr>
-<tr><td>IM3</td><td>CVSCJU008</td></tr>
-<tr><td>IM3</td><td>CVSCJU013</td></tr>
-<tr><td>IM3</td><td>CVSCJU016</td></tr>
-<tr><td>IM3</td><td>CVSCJU009</td></tr>
-<tr><td>IM3</td><td>CVSCJU010</td></tr>
-<tr><td>IM3</td><td>CVSCJU011</td></tr>
-<tr><td>IM3</td><td>CVSCJU015</td></tr>
-<tr><td>IM3</td><td>CVSCJU017</td></tr>
-<tr><td>IM3</td><td>CVSCJU020</td></tr>
-<tr><td>IM3</td><td>SKBPLARA01</td></tr>
-<tr><td>IM3</td><td>SKBPLARA02</td></tr>
-<tr><td>IM3</td><td>SKBPLARA03</td></tr>
-<tr><td>IM3</td><td>SKBPLARA07</td></tr>
-<tr><td>IM3</td><td>SKBPLARA12</td></tr>
-<tr><td>IM3</td><td>2613051182</td></tr>
-<tr><td>IM3</td><td>SKBPLARA17</td></tr>
-<tr><td>IM3</td><td>SKBPLARA19</td></tr>
-<tr><td>IM3</td><td>SKBPLARA20</td></tr>
-<tr><td>IM3</td><td>SKBPLARA21</td></tr>
-<tr><td>IM3</td><td>DSESGRN01</td></tr>
-<tr><td>IM3</td><td>SKBPLARA04</td></tr>
-<tr><td>IM3</td><td>SKBPLARA08</td></tr>
-<tr><td>IM3</td><td>SKBPLARA11</td></tr>
-<tr><td>IM3</td><td>10CVSSKBO</td></tr>
-<tr><td>IM3</td><td>14CVSSKBO</td></tr>
-<tr><td>IM3</td><td>15CVSSKBO</td></tr>
-<tr><td>IM3</td><td>1CVSSKBO</td></tr>
-<tr><td>IM3</td><td>3CVSSKBO</td></tr>
-<tr><td>IM3</td><td>5CVSSKBO</td></tr>
-<tr><td>IM3</td><td>6CVSSKBO</td></tr>
-<tr><td>IM3</td><td>8CVSSKBO</td></tr>
-<tr><td>IM3</td><td>9CVSSKBO</td></tr>
-<tr><td>IM3</td><td>11CVSSKBI</td></tr>
-<tr><td>IM3</td><td>15CVSSKBI</td></tr>
-<tr><td>IM3</td><td>17CVSSKBI</td></tr>
-<tr><td>IM3</td><td>4CVSSKBI</td></tr>
-<tr><td>IM3</td><td>6CVSSKBI</td></tr>
-<tr><td>IM3</td><td>7CVSSKBI</td></tr>
-<tr><td>IM3</td><td>8CVSSKBI</td></tr>
-<tr><td>IM3</td><td>DSESKBMT02</td></tr>
-<tr><td>IM3</td><td>DSEKTSI01</td></tr>
-<tr><td>IM3</td><td>DSEKTSI02</td></tr>
-<tr><td>IM3</td><td>DSEKTSI03</td></tr>
-<tr><td>IM3</td><td>DSEKTSI04</td></tr>
-<tr><td>IM3</td><td>DSEKTSI05</td></tr>
-<tr><td>IM3</td><td>DSEKTSI06</td></tr>
-<tr><td>IM3</td><td>DSE22308001</td></tr>
-<tr><td>IM3</td><td>2613050436</td></tr>
-<tr><td>IM3</td><td>CSO2023051</td></tr>
-<tr><td>IM3</td><td>DSE1124</td></tr>
-<tr><td>IM3</td><td>2613051228</td></tr>
-<tr><td>IM3</td><td>2613051229</td></tr>
-<tr><td>IM3</td><td>2613051230</td></tr>
-<tr><td>IM3</td><td>DSEPNEA12</td></tr>
-<tr><td>IM3</td><td>DSEPNEA13</td></tr>
-<tr><td>IM3</td><td>DSEPNEA14</td></tr>
-<tr><td>IM3</td><td>DSEPNEN10</td></tr>
-<tr><td>IM3</td><td>DSEPNEN11</td></tr>
-<tr><td>IM3</td><td>DSEPNEN12</td></tr>
-<tr><td>IM3</td><td>DSEPNEN13</td></tr>
-<tr><td>IM3</td><td>DSEPNEN14</td></tr>
-<tr><td>IM3</td><td>DSEPNEN15</td></tr>
-<tr><td>IM3</td><td>DSE22402004</td></tr>
-<tr><td>IM3</td><td>DSELBKA10</td></tr>
-<tr><td>IM3</td><td>DSELBKA11</td></tr>
-<tr><td>IM3</td><td>DSELBKA12</td></tr>
-<tr><td>IM3</td><td>DSELBKA13</td></tr>
-<tr><td>IM3</td><td>DSELBKA14</td></tr>
-<tr><td>IM3</td><td>DSELBKA15</td></tr>
-<tr><td>IM3</td><td>DSELBKA16</td></tr>
-<tr><td>IM3</td><td>DSELBKA17</td></tr>
-<tr><td>IM3</td><td>DSELBKA18</td></tr>
-<tr><td>IM3</td><td>DSELBKN06</td></tr>
-<tr><td>IM3</td><td>DSELBKN07</td></tr>
-<tr><td>IM3</td><td>DSELBKN08</td></tr>
-<tr><td>IM3</td><td>DSELBKN09</td></tr>
-<tr><td>IM3</td><td>CSOSDP1</td></tr>
-<tr><td>IM3</td><td>DSE2020</td></tr>
-<tr><td>IM3</td><td>DSE22308003</td></tr>
-<tr><td>IM3</td><td>CSO2023033</td></tr>
-<tr><td>IM3</td><td>DSE20230331</td></tr>
-<tr><td>IM3</td><td>DSEKTCN02</td></tr>
-<tr><td>IM3</td><td>DSEKTCN03</td></tr>
-<tr><td>IM3</td><td>DSEKTCN05</td></tr>
-<tr><td>IM3</td><td>DSEKTCN06</td></tr>
-<tr><td>IM3</td><td>DSEKTCN07</td></tr>
-<tr><td>IM3</td><td>DSEKTCN08</td></tr>
-<tr><td>IM3</td><td>DSEKTCN12</td></tr>
-<tr><td>IM3</td><td>DSEKTCN13</td></tr>
-<tr><td>IM3</td><td>DSEKTSG08</td></tr>
-<tr><td>IM3</td><td>DSEKTSG09</td></tr>
-<tr><td>IM3</td><td>DSEKTSG10</td></tr>
-<tr><td>IM3</td><td>DSEKTSG11</td></tr>
-<tr><td>IM3</td><td>DSEKTSG12</td></tr>
-<tr><td>IM3</td><td>DSEKTSG14</td></tr>
-<tr><td>IM3</td><td>DSEKTSG15</td></tr>
-<tr><td>IM3</td><td>DSEKTSG16</td></tr>
-<tr><td>IM3</td><td>DSEKTSG17</td></tr>
-<tr><td>IM3</td><td>DSEKTSG18</td></tr>
-<tr><td>IM3</td><td>DSEKTSG19</td></tr>
-<tr><td>IM3</td><td>DSEKTSG20</td></tr>
-<tr><td>IM3</td><td>CSO2023034</td></tr>
-<tr><td>IM3</td><td>DSE1381</td></tr>
-<tr><td>IM3</td><td>DSE1486</td></tr>
-<tr><td>IM3</td><td>DSE22311007B</td></tr>
-<tr><td>IM3</td><td>DSESRGB02</td></tr>
-<tr><td>IM3</td><td>DSESRGB03</td></tr>
-<tr><td>IM3</td><td>DSE1385</td></tr>
-<tr><td>IM3</td><td>DSESRGT01</td></tr>
-<tr><td>IM3</td><td>DSESRGT02</td></tr>
-<tr><td>IM3</td><td>DSESRGT04</td></tr>
-<tr><td>IM3</td><td>DSESRGT05</td></tr>
-<tr><td>IM3</td><td>DSESRGT06</td></tr>
-<tr><td>IM3</td><td>DSESRGT07</td></tr>
-<tr><td>IM3</td><td>DSE2000</td></tr>
-<tr><td>IM3</td><td>DSESRGT08</td></tr>
-<tr><td>IM3</td><td>DSE1402</td></tr>
-<tr><td>IM3</td><td>DSE2023</td></tr>
-<tr><td>IM3</td><td>DSESRGT03</td></tr>
-<tr><td>IM3</td><td>CSOBALARAJA14</td></tr>
-<tr><td>IM3</td><td>CSOBALARAJA15</td></tr>
-<tr><td>IM3</td><td>CSOBALARAJA16</td></tr>
-<tr><td>IM3</td><td>CSOBALARAJA17</td></tr>
-<tr><td>IM3</td><td>CSOBALARAJA18</td></tr>
-<tr><td>IM3</td><td>CSOBALARAJA19</td></tr>
-<tr><td>IM3</td><td>CSOBALARAJA20</td></tr>
-<tr><td>IM3</td><td>CSOBALARAJA21</td></tr>
-<tr><td>IM3</td><td>CSOBALARAJA22</td></tr>
-<tr><td>IM3</td><td>DSECPT02</td></tr>
-<tr><td>IM3</td><td>DSECPT03</td></tr>
-<tr><td>IM3</td><td>DSECPT04</td></tr>
-<tr><td>IM3</td><td>DSECPT05</td></tr>
-<tr><td>IM3</td><td>DSECPT06</td></tr>
-<tr><td>IM3</td><td>DSECPT07</td></tr>
-<tr><td>IM3</td><td>DSECPT08</td></tr>
-<tr><td>IM3</td><td>DSECPT09</td></tr>
-<tr><td>IM3</td><td>DSECPT10</td></tr>
-<tr><td>IM3</td><td>DSECPT11</td></tr>
-<tr><td>IM3</td><td>DSECPT12</td></tr>
-<tr><td>IM3</td><td>DSETGRKJ01</td></tr>
-<tr><td>IM3</td><td>DSETGRKJ02</td></tr>
-<tr><td>IM3</td><td>DSETGRKJ03</td></tr>
-<tr><td>IM3</td><td>DSETGRKJ05</td></tr>
-<tr><td>IM3</td><td>DSETGRKJ06</td></tr>
-<tr><td>IM3</td><td>DSETGRKJ07</td></tr>
-<tr><td>IM3</td><td>DSETGRKJ08</td></tr>
-<tr><td>IM3</td><td>DSEPGDN12</td></tr>
-<tr><td>IM3</td><td>DSEPGDN13</td></tr>
-<tr><td>IM3</td><td>DSEPGDN14</td></tr>
-<tr><td>IM3</td><td>DSEPGDN15</td></tr>
-<tr><td>IM3</td><td>DSEPGDN16</td></tr>
-<tr><td>IM3</td><td>DSEPGDN18</td></tr>
-<tr><td>IM3</td><td>DSEPGDN19</td></tr>
-<tr><td>IM3</td><td>DSEPGDN20</td></tr>
-<tr><td>IM3</td><td>DSEPGDN21</td></tr>
-<tr><td>IM3</td><td>DSEPGDN22</td></tr>
-<tr><td>IM3</td><td>DSESROG15</td></tr>
-<tr><td>IM3</td><td>DSESROG16</td></tr>
-<tr><td>IM3</td><td>DSESROG17</td></tr>
-<tr><td>IM3</td><td>DSESROG18</td></tr>
-<tr><td>IM3</td><td>DSESROG19</td></tr>
-<tr><td>IM3</td><td>DSESROG20</td></tr>
-<tr><td>IM3</td><td>DSESROG21</td></tr>
-<tr><td>IM3</td><td>DSESROG22</td></tr>
-<tr><td>IM3</td><td>DSESROG23</td></tr>
-<tr><td>IM3</td><td>DSESROG24</td></tr>
-<tr><td>IM3</td><td>DSECIPON9833</td></tr>
-<tr><td>IM3</td><td>DSEKRWI01</td></tr>
-<tr><td>IM3</td><td>DSEKRWI02</td></tr>
-<tr><td>IM3</td><td>DSEKRWI03</td></tr>
-<tr><td>IM3</td><td>DSEKRWI04</td></tr>
-<tr><td>IM3</td><td>DSEKRWI05</td></tr>
-<tr><td>IM3</td><td>DSEKRWI06</td></tr>
-<tr><td>IM3</td><td>DSEKRWI07</td></tr>
-<tr><td>IM3</td><td>DSEKRWI08</td></tr>
-<tr><td>IM3</td><td>DSEKRWI09</td></tr>
-<tr><td>IM3</td><td>DSEKARA0474</td></tr>
-<tr><td>IM3</td><td>DSEKARA0622</td></tr>
-<tr><td>IM3</td><td>DSEKARA0814</td></tr>
-<tr><td>IM3</td><td>DSEKARA2077</td></tr>
-<tr><td>IM3</td><td>DSEKARA2592</td></tr>
-<tr><td>IM3</td><td>DSEKARA3695</td></tr>
-<tr><td>IM3</td><td>DSESPTN01</td></tr>
-<tr><td>IM3</td><td>DSECPNH02</td></tr>
-<tr><td>IM3</td><td>DSECPNH03</td></tr>
-<tr><td>IM3</td><td>DSECPNH04</td></tr>
-<tr><td>IM3</td><td>DSECPNH05</td></tr>
-<tr><td>IM3</td><td>DSECPNH06</td></tr>
-<tr><td>IM3</td><td>DSECPNH07</td></tr>
-<tr><td>IM3</td><td>DSECPNH08</td></tr>
-<tr><td>IM3</td><td>DSECPNH10</td></tr>
-<tr><td>IM3</td><td>DSECPNH11</td></tr>
-<tr><td>IM3</td><td>CSO20230610</td></tr>
-<tr><td>IM3</td><td>DSE22309005</td></tr>
-<tr><td>IM3</td><td>CSO202303101</td></tr>
-<tr><td>IM3</td><td>CSO202303701</td></tr>
-<tr><td>IM3</td><td>CSO202303702</td></tr>
-<tr><td>3ID</td><td>2613051123</td></tr>
-<tr><td>3ID</td><td>1-135633750917</td></tr>
-<tr><td>3ID</td><td>1-135633750969</td></tr>
-<tr><td>3ID</td><td>1-135633751022</td></tr>
-<tr><td>3ID</td><td>1-135633751048</td></tr>
-<tr><td>3ID</td><td>1-135633751074</td></tr>
-<tr><td>3ID</td><td>1-135633751100</td></tr>
-<tr><td>3ID</td><td>1-135633751204</td></tr>
-<tr><td>3ID</td><td>1-135633751230</td></tr>
-<tr><td>3ID</td><td>1-135633751256</td></tr>
-<tr><td>3ID</td><td>1-136047555671</td></tr>
-<tr><td>3ID</td><td>1-136065685967</td></tr>
-<tr><td>3ID</td><td>1-136075848025</td></tr>
-<tr><td>3ID</td><td>1-136075848077</td></tr>
-<tr><td>3ID</td><td>1-136425465550</td></tr>
-<tr><td>3ID</td><td>1-160273721476</td></tr>
-<tr><td>3ID</td><td>1-28825212162</td></tr>
-<tr><td>3ID</td><td>1-28825212166</td></tr>
-<tr><td>3ID</td><td>1-28825212168</td></tr>
-<tr><td>3ID</td><td>1-28825212170</td></tr>
-<tr><td>3ID</td><td>1-28825212172</td></tr>
-<tr><td>3ID</td><td>1-28825212182</td></tr>
-<tr><td>3ID</td><td>1-28825212202</td></tr>
-<tr><td>3ID</td><td>1-28825212204</td></tr>
-<tr><td>3ID</td><td>1-28825212206</td></tr>
-<tr><td>3ID</td><td>1-28825212208</td></tr>
-<tr><td>3ID</td><td>1-28825212210</td></tr>
-<tr><td>3ID</td><td>1-28825212212</td></tr>
-<tr><td>3ID</td><td>1-28825212216</td></tr>
-<tr><td>3ID</td><td>1-28825212218</td></tr>
-<tr><td>3ID</td><td>1-28825212220</td></tr>
-<tr><td>3ID</td><td>1-28825212222</td></tr>
-<tr><td>3ID</td><td>1-28825212224</td></tr>
-<tr><td>3ID</td><td>1-28825212226</td></tr>
-<tr><td>3ID</td><td>1-28825212228</td></tr>
-<tr><td>3ID</td><td>1-28825212230</td></tr>
-<tr><td>3ID</td><td>1-28825212232</td></tr>
-<tr><td>3ID</td><td>1-28825212236</td></tr>
-<tr><td>3ID</td><td>1-28825212246</td></tr>
-<tr><td>3ID</td><td>1-28825212248</td></tr>
-<tr><td>3ID</td><td>(blank)</td></tr>
-<tr><td>3ID</td><td>2613050923</td></tr>
-<tr><td>3ID</td><td>2613050924</td></tr>
-<tr><td>3ID</td><td>2613051163</td></tr>
-<tr><td>3ID</td><td>2613051224</td></tr>
-<tr><td>3ID</td><td>1-135606742761</td></tr>
-<tr><td>3ID</td><td>1-135606742813</td></tr>
-<tr><td>3ID</td><td>1-135606742839</td></tr>
-<tr><td>3ID</td><td>1-135606742891</td></tr>
-<tr><td>3ID</td><td>1-136047555707</td></tr>
-<tr><td>3ID</td><td>1-136075847937</td></tr>
-<tr><td>3ID</td><td>1-136075847963</td></tr>
-<tr><td>3ID</td><td>1-139130624864</td></tr>
-<tr><td>3ID</td><td>1-151779209163</td></tr>
-<tr><td>3ID</td><td>1-151779209189</td></tr>
-<tr><td>3ID</td><td>1-152517195511</td></tr>
-<tr><td>3ID</td><td>1-28825212146</td></tr>
-<tr><td>3ID</td><td>1-28825212148</td></tr>
-<tr><td>3ID</td><td>1-28825212150</td></tr>
-<tr><td>3ID</td><td>1-28825212152</td></tr>
-<tr><td>3ID</td><td>1-28825212154</td></tr>
-<tr><td>3ID</td><td>1-28825212156</td></tr>
-<tr><td>3ID</td><td>1-28825212158</td></tr>
-<tr><td>3ID</td><td>1-28825212174</td></tr>
-<tr><td>3ID</td><td>1-28825212176</td></tr>
-<tr><td>3ID</td><td>1-28825212180</td></tr>
-<tr><td>3ID</td><td>1-28825212186</td></tr>
-<tr><td>3ID</td><td>1-28825212190</td></tr>
-<tr><td>3ID</td><td>1-28825212192</td></tr>
-<tr><td>3ID</td><td>1-28825212196</td></tr>
-<tr><td>3ID</td><td>1-28825212200</td></tr>
-<tr><td>3ID</td><td>1-28825212238</td></tr>
-<tr><td>3ID</td><td>1-28825212240</td></tr>
-<tr><td>3ID</td><td>1-28825212242</td></tr>
-<tr><td>3ID</td><td>1-28825212244</td></tr>
-<tr><td>3ID</td><td>1-28825212250</td></tr>
-<tr><td>3ID</td><td>1-28898503783</td></tr>
-<tr><td>3ID</td><td>(blank)</td></tr>
-<tr><td>3ID</td><td>1-114867644860</td></tr>
-<tr><td>3ID</td><td>1-135556558562</td></tr>
-<tr><td>3ID</td><td>1-168828419661</td></tr>
-<tr><td>3ID</td><td>1-170896436965</td></tr>
-<tr><td>3ID</td><td>1-28825212797</td></tr>
-<tr><td>3ID</td><td>2-0012364247</td></tr>
-<tr><td>3ID</td><td>2-0012364427</td></tr>
-<tr><td>3ID</td><td>2-0012364429</td></tr>
-<tr><td>3ID</td><td>2-0012364431</td></tr>
-<tr><td>3ID</td><td>2-0012364432</td></tr>
-<tr><td>3ID</td><td>2-0012364433</td></tr>
-<tr><td>3ID</td><td>2-0012364434</td></tr>
-<tr><td>3ID</td><td>2-0012364435</td></tr>
-<tr><td>3ID</td><td>2-0012364436</td></tr>
-<tr><td>3ID</td><td>2-0012364437</td></tr>
-<tr><td>3ID</td><td>2-0012364438</td></tr>
-<tr><td>3ID</td><td>(blank)</td></tr>
-<tr><td>3ID</td><td>2613050912</td></tr>
-<tr><td>3ID</td><td>1-135556141466</td></tr>
-<tr><td>3ID</td><td>1-163544572541</td></tr>
-<tr><td>3ID</td><td>1-170896436939</td></tr>
-<tr><td>3ID</td><td>1-197577401464</td></tr>
-<tr><td>3ID</td><td>1-197577773053</td></tr>
-<tr><td>3ID</td><td>1-28825212681</td></tr>
-<tr><td>3ID</td><td>1-28825212685</td></tr>
-<tr><td>3ID</td><td>1-28825212691</td></tr>
-<tr><td>3ID</td><td>1-28825212693</td></tr>
-<tr><td>3ID</td><td>1-28825212697</td></tr>
-<tr><td>3ID</td><td>2-0012364248</td></tr>
-<tr><td>3ID</td><td>2-0012364426</td></tr>
-<tr><td>3ID</td><td>2-0012364428</td></tr>
-<tr><td>3ID</td><td>2-0012364430</td></tr>
-<tr><td>3ID</td><td>2-0012364535</td></tr>
-<tr><td>3ID</td><td>(blank)</td></tr>
-<tr><td>3ID</td><td>1-136128746539</td></tr>
-<tr><td>3ID</td><td>1-136128746591</td></tr>
-<tr><td>3ID</td><td>1-136150144446</td></tr>
-<tr><td>3ID</td><td>1-136150144498</td></tr>
-<tr><td>3ID</td><td>1-152517195537</td></tr>
-<tr><td>3ID</td><td>1-152859163833</td></tr>
-<tr><td>3ID</td><td>1-154089303003</td></tr>
-<tr><td>3ID</td><td>1-154972497589</td></tr>
-<tr><td>3ID</td><td>1-156243050003</td></tr>
-<tr><td>3ID</td><td>1-167501198981</td></tr>
-<tr><td>3ID</td><td>1-167501983911</td></tr>
-<tr><td>3ID</td><td>1-167505269641</td></tr>
-<tr><td>3ID</td><td>1-167505270093</td></tr>
-<tr><td>3ID</td><td>1-167505336061</td></tr>
-<tr><td>3ID</td><td>1-167506701835</td></tr>
-<tr><td>3ID</td><td>1-167506843545</td></tr>
-<tr><td>3ID</td><td>1-28825212292</td></tr>
-<tr><td>3ID</td><td>1-28825212294</td></tr>
-<tr><td>3ID</td><td>1-28825212296</td></tr>
-<tr><td>3ID</td><td>1-28825212300</td></tr>
-<tr><td>3ID</td><td>1-28825212302</td></tr>
-<tr><td>3ID</td><td>1-28825212304</td></tr>
-<tr><td>3ID</td><td>1-28825212308</td></tr>
-<tr><td>3ID</td><td>1-28825212310</td></tr>
-<tr><td>3ID</td><td>1-91735122850</td></tr>
-<tr><td>3ID</td><td>(blank)</td></tr>
-<tr><td>3ID</td><td>1-112454158079</td></tr>
-<tr><td>3ID</td><td>1-136000006487</td></tr>
-<tr><td>3ID</td><td>1-136000006523</td></tr>
-<tr><td>3ID</td><td>1-136027989699</td></tr>
-<tr><td>3ID</td><td>1-136027989725</td></tr>
-<tr><td>3ID</td><td>1-136027989751</td></tr>
-<tr><td>3ID</td><td>1-136027989777</td></tr>
-<tr><td>3ID</td><td>1-136125634909</td></tr>
-<tr><td>3ID</td><td>1-136125634935</td></tr>
-<tr><td>3ID</td><td>1-136125634961</td></tr>
-<tr><td>3ID</td><td>1-136125634987</td></tr>
-<tr><td>3ID</td><td>1-136125635013</td></tr>
-<tr><td>3ID</td><td>1-136128745723</td></tr>
-<tr><td>3ID</td><td>1-136128745749</td></tr>
-<tr><td>3ID</td><td>1-136128745801</td></tr>
-<tr><td>3ID</td><td>1-136128745827</td></tr>
-<tr><td>3ID</td><td>1-154592130332</td></tr>
-<tr><td>3ID</td><td>1-28825212256</td></tr>
-<tr><td>3ID</td><td>1-28825212260</td></tr>
-<tr><td>3ID</td><td>1-28825212262</td></tr>
-<tr><td>3ID</td><td>1-28825212264</td></tr>
-<tr><td>3ID</td><td>1-28825212266</td></tr>
-<tr><td>3ID</td><td>1-28825212270</td></tr>
-<tr><td>3ID</td><td>1-28825212272</td></tr>
-<tr><td>3ID</td><td>1-28825212276</td></tr>
-<tr><td>3ID</td><td>1-28825212278</td></tr>
-<tr><td>3ID</td><td>1-28825212280</td></tr>
-<tr><td>3ID</td><td>1-28825212282</td></tr>
-<tr><td>3ID</td><td>1-28825212284</td></tr>
-<tr><td>3ID</td><td>1-28825212290</td></tr>
-<tr><td>3ID</td><td>1-28862969516</td></tr>
-<tr><td>3ID</td><td>1-91735122904</td></tr>
-<tr><td>3ID</td><td>2-0012364246</td></tr>
-<tr><td>3ID</td><td>2-0012364249</td></tr>
-<tr><td>3ID</td><td>2-0012364250</td></tr>
-<tr><td>3ID</td><td>(blank)</td></tr>
-<tr><td>3ID</td><td>2613051169</td></tr>
-<tr><td>3ID</td><td>2613051170</td></tr>
-<tr><td>3ID</td><td>1-135556141387</td></tr>
-<tr><td>3ID</td><td>1-154972497563</td></tr>
-<tr><td>3ID</td><td>1-155961724679</td></tr>
-<tr><td>3ID</td><td>1-160273476039</td></tr>
-<tr><td>3ID</td><td>1-160273476518</td></tr>
-<tr><td>3ID</td><td>1-160273720987</td></tr>
-<tr><td>3ID</td><td>1-160639254950</td></tr>
-<tr><td>3ID</td><td>1-160640212419</td></tr>
-<tr><td>3ID</td><td>1-163544111683</td></tr>
-<tr><td>3ID</td><td>1-163603781421</td></tr>
-<tr><td>3ID</td><td>1-181686463934</td></tr>
-<tr><td>3ID</td><td>1-181696775405</td></tr>
-<tr><td>3ID</td><td>1-193868271313</td></tr>
-<tr><td>3ID</td><td>1-28825212713</td></tr>
-<tr><td>3ID</td><td>1-28825212715</td></tr>
-<tr><td>3ID</td><td>1-28825212717</td></tr>
-<tr><td>3ID</td><td>1-28825212719</td></tr>
-<tr><td>3ID</td><td>1-28825212723</td></tr>
-<tr><td>3ID</td><td>1-28825212725</td></tr>
-<tr><td>3ID</td><td>1-28825212727</td></tr>
-<tr><td>3ID</td><td>1-28825212731</td></tr>
-<tr><td>3ID</td><td>1-28825212733</td></tr>
-<tr><td>3ID</td><td>1-28825212745</td></tr>
-<tr><td>3ID</td><td>1-28825212747</td></tr>
-<tr><td>3ID</td><td>(blank)</td></tr>
-<tr><td>3ID</td><td>2613051253</td></tr>
-<tr><td>3ID</td><td>1-135943118475</td></tr>
-<tr><td>3ID</td><td>1-135944887495</td></tr>
-<tr><td>3ID</td><td>1-135951732027</td></tr>
-<tr><td>3ID</td><td>1-135951732479</td></tr>
-<tr><td>3ID</td><td>1-135951862619</td></tr>
-<tr><td>3ID</td><td>1-135951863081</td></tr>
-<tr><td>3ID</td><td>1-135951953932</td></tr>
-<tr><td>3ID</td><td>1-135951954384</td></tr>
-<tr><td>3ID</td><td>1-135952149288</td></tr>
-<tr><td>3ID</td><td>1-135952181985</td></tr>
-<tr><td>3ID</td><td>1-135952182437</td></tr>
-<tr><td>3ID</td><td>1-135952348740</td></tr>
-<tr><td>3ID</td><td>1-136195823505</td></tr>
-<tr><td>3ID</td><td>1-136195823557</td></tr>
-<tr><td>3ID</td><td>1-136195823583</td></tr>
-<tr><td>3ID</td><td>1-136195823635</td></tr>
-<tr><td>3ID</td><td>1-136195823702</td></tr>
-<tr><td>3ID</td><td>1-136195823810</td></tr>
-<tr><td>3ID</td><td>1-136195823908</td></tr>
-<tr><td>3ID</td><td>1-136195823934</td></tr>
-<tr><td>3ID</td><td>1-136195823960</td></tr>
-<tr><td>3ID</td><td>1-136195823986</td></tr>
-<tr><td>3ID</td><td>1-136195824078</td></tr>
-<tr><td>3ID</td><td>1-136197821731</td></tr>
-<tr><td>3ID</td><td>1-136197821835</td></tr>
-<tr><td>3ID</td><td>1-136197821861</td></tr>
-<tr><td>3ID</td><td>1-136197821887</td></tr>
-<tr><td>3ID</td><td>1-136197822017</td></tr>
-<tr><td>3ID</td><td>1-136197822043</td></tr>
-<tr><td>3ID</td><td>1-136206902147</td></tr>
-<tr><td>3ID</td><td>1-136206902252</td></tr>
-<tr><td>3ID</td><td>1-136206902278</td></tr>
-<tr><td>3ID</td><td>1-136207067180</td></tr>
-<tr><td>3ID</td><td>1-193868271286</td></tr>
-<tr><td>3ID</td><td>1-28825211942</td></tr>
-<tr><td>3ID</td><td>1-28825211944</td></tr>
-<tr><td>3ID</td><td>1-28825211946</td></tr>
-<tr><td>3ID</td><td>1-28825211948</td></tr>
-<tr><td>3ID</td><td>1-28825211950</td></tr>
-<tr><td>3ID</td><td>1-28825211952</td></tr>
-<tr><td>3ID</td><td>1-28825211954</td></tr>
-<tr><td>3ID</td><td>1-28825211956</td></tr>
-<tr><td>3ID</td><td>1-28825211966</td></tr>
-<tr><td>3ID</td><td>1-28825211968</td></tr>
-<tr><td>3ID</td><td>1-28825211974</td></tr>
-<tr><td>3ID</td><td>1-28825211976</td></tr>
-<tr><td>3ID</td><td>1-28825211978</td></tr>
-<tr><td>3ID</td><td>1-28825211982</td></tr>
-<tr><td>3ID</td><td>1-28825211984</td></tr>
-<tr><td>3ID</td><td>1-28825211986</td></tr>
-<tr><td>3ID</td><td>1-28825211992</td></tr>
-<tr><td>3ID</td><td>1-28825211994</td></tr>
-<tr><td>3ID</td><td>1-28825212002</td></tr>
-<tr><td>3ID</td><td>1-28825212004</td></tr>
-<tr><td>3ID</td><td>1-28825212006</td></tr>
-<tr><td>3ID</td><td>1-28825212010</td></tr>
-<tr><td>3ID</td><td>1-28825212012</td></tr>
-<tr><td>3ID</td><td>1-28825212016</td></tr>
-<tr><td>3ID</td><td>1-28825212018</td></tr>
-<tr><td>3ID</td><td>1-28825212020</td></tr>
-<tr><td>3ID</td><td>1-28825212024</td></tr>
-<tr><td>3ID</td><td>1-28825212028</td></tr>
-<tr><td>3ID</td><td>1-28825212030</td></tr>
-<tr><td>3ID</td><td>1-28825212032</td></tr>
-<tr><td>3ID</td><td>1-28825212034</td></tr>
-<tr><td>3ID</td><td>1-28825212036</td></tr>
-<tr><td>3ID</td><td>1-28825212038</td></tr>
-<tr><td>3ID</td><td>1-28825212042</td></tr>
-<tr><td>3ID</td><td>2-0012347731</td></tr>
-<tr><td>3ID</td><td>2-0012347733</td></tr>
-<tr><td>3ID</td><td>2-0012347737</td></tr>
-<tr><td>3ID</td><td>2-0012347740</td></tr>
-<tr><td>3ID</td><td>2-0012347757</td></tr>
-<tr><td>3ID</td><td>2-0012347763</td></tr>
-<tr><td>3ID</td><td>2-0012347765</td></tr>
     </tbody></table>
 
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
     <script>
         let tsStandard = null;
         let tsDse = null;
+        let tsNonSales = null;
         const MAX_MSISDN = 5;
 
         document.addEventListener("DOMContentLoaded", function() {
@@ -1015,6 +452,13 @@
                 sortField: { field: "value", direction: "asc" },
                 placeholder: "Search ID...",
                 onChange: function(value) { checkDseCompletion(); }
+            });
+
+            // New instances for tracking Dedicated Non-Sales table specifically
+            tsNonSales = new TomSelect('#non-sales-select', {
+                create: false, valueField: 'value', labelField: 'text', searchField: ['text'],
+                sortField: { field: "employeeName", direction: "asc" },
+                onChange: function(value) { if(value) { showQuestion6(); } else { hideQuestion6(); } }
             });
 
             document.getElementById('dse-name-input').addEventListener('input', function() {
@@ -1111,63 +555,128 @@
                 document.documentElement.setAttribute('data-brand', selectedBrandRadio.value);
             }
             
-            // RESET CASCADING DOWNSTREAM
-            document.getElementById('sales-status-select').value = '';
-            document.getElementById('role-select').value = '';
+            // RESET CASCADING QUESTIONS DOWNSTREAM
+            const statusSelect = document.getElementById('sales-status-select');
+            statusSelect.value = '';
+            
+            const roleSelect = document.getElementById('role-select');
+            roleSelect.value = '';
             document.getElementById('role-section').style.display = 'none';
-            document.getElementById('role-select').removeAttribute('required');
+            roleSelect.removeAttribute('required');
+            
+            const salesPositionSelect = document.getElementById('sales-position-select');
+            salesPositionSelect.value = '';
+            document.getElementById('sales-position-section').style.display = 'none';
+            salesPositionSelect.removeAttribute('required');
+
             hideQuestion4();
             
             document.getElementById('sales-status-section').style.display = 'block';
-            document.getElementById('sales-status-select').setAttribute('required', 'true');
         }
 
         function handleSalesStatusChange() {
-            const status = document.getElementById('sales-status-select').value;
+            const statusSelect = document.getElementById('sales-status-select');
+            const roleSection = document.getElementById('role-section');
+            const roleSelect = document.getElementById('role-select');
+            const salesPositionSelect = document.getElementById('sales-position-select');
+            const nonSalesWrapper = document.getElementById('non-sales-lookup-wrapper');
+            const nonSalesSelect = document.getElementById('non-sales-select');
             
-            // RESET CASCADING DOWNSTREAM
-            document.getElementById('role-select').value = '';
+            // RESET CASCADING QUESTIONS DOWNSTREAM
+            roleSelect.value = '';
+            salesPositionSelect.value = '';
+            document.getElementById('sales-position-section').style.display = 'none';
+            salesPositionSelect.removeAttribute('required');
             hideQuestion4();
 
-            if (status === 'sales') {
-                document.getElementById('role-section').style.display = 'block';
-                document.getElementById('role-select').setAttribute('required', 'true');
-            } else if (status === 'non_sales') {
-                document.getElementById('role-section').style.display = 'none';
-                document.getElementById('role-select').removeAttribute('required');
-                showQuestion4();
+            if (statusSelect.value === 'sales') {
+                nonSalesWrapper.style.display = 'none';
+                nonSalesSelect.removeAttribute('required');
+                if(tsNonSales) tsNonSales.clear();
+
+                roleSection.style.display = 'block';
+                roleSelect.setAttribute('required', 'true');
+            } else if (statusSelect.value === 'non_sales') {
+                roleSection.style.display = 'none';
+                roleSelect.removeAttribute('required');
+                
+                // Show non-sales search wrapper directly
+                nonSalesWrapper.style.display = 'block';
+                nonSalesSelect.setAttribute('required', 'true');
+                loadNonSalesData();
             }
         }
 
         function handleRoleChange() {
+            const roleSelect = document.getElementById('role-select');
+            const salesPositionSection = document.getElementById('sales-position-section');
+            const salesPositionSelect = document.getElementById('sales-position-select');
+            
+            // RESET CASCADING QUESTIONS DOWNSTREAM
+            salesPositionSelect.value = '';
             hideQuestion4();
-            if (document.getElementById('role-select').value !== "") {
+            
+            if (roleSelect.value === 'internal_sales') {
+                salesPositionSection.style.display = 'block';
+                salesPositionSelect.setAttribute('required', 'true');
+            } else if (roleSelect.value !== "") {
+                salesPositionSection.style.display = 'none';
+                salesPositionSelect.removeAttribute('required');
                 showQuestion4();
             }
         }
 
+        function handlePositionChange() {
+            const salesPositionSelect = document.getElementById('sales-position-select');
+            
+            // RESET CASCADING QUESTIONS DOWNSTREAM
+            hideQuestion4();
+            
+            if (salesPositionSelect.value !== "") { 
+                showQuestion4(); 
+            }
+        }
+
+        function loadNonSalesData() {
+            if (!tsNonSales) return;
+            tsNonSales.clearOptions();
+            const rows = document.querySelectorAll('#non-sales-table tbody tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length < 2) return;
+                const id = cells[0].textContent.trim();
+                const name = cells[1].textContent.trim();
+                tsNonSales.addOption({ value: `${id} - ${name}`, text: `${id} - ${name}`, employeeName: name });
+            });
+            tsNonSales.refreshOptions(false);
+        }
+
         function showQuestion4() {
-            const status = document.getElementById('sales-status-select').value;
+            const roleSelect = document.getElementById('role-select').value;
             document.getElementById('question-4-section').style.display = 'block';
 
-            if (status === 'non_sales') {
+            if (roleSelect !== 'internal_sales') {
+                document.getElementById('standard-lookup-wrapper').style.display = 'none';
+                document.getElementById('dse-lookup-wrapper').style.display = 'block';
+                document.getElementById('dse-name-input').setAttribute('required', 'true');
+            } else {
                 document.getElementById('standard-lookup-wrapper').style.display = 'block';
                 document.getElementById('dse-lookup-wrapper').style.display = 'none';
                 document.getElementById('dse-name-input').removeAttribute('required');
                 document.getElementById('dse-name-input').value = '';
-            } else {
-                document.getElementById('standard-lookup-wrapper').style.display = 'none';
-                document.getElementById('dse-lookup-wrapper').style.display = 'block';
-                document.getElementById('dse-name-input').setAttribute('required', 'true');
             }
             loadTableData();
         }
 
         function hideQuestion4() {
             document.getElementById('question-4-section').style.display = 'none';
+            document.getElementById('non-sales-lookup-wrapper').style.display = 'none';
+            document.getElementById('non-sales-select').removeAttribute('required');
+            
             hideQuestion6();
             if(tsStandard) { tsStandard.clear(); tsStandard.clearOptions(); }
             if(tsDse) { tsDse.clear(); tsDse.clearOptions(); }
+            if(tsNonSales) { tsNonSales.clear(); tsNonSales.clearOptions(); }
             document.getElementById('dse-name-input').value = '';
         }
 
@@ -1302,24 +811,16 @@
 
         function loadTableData() {
             const selectedBrandRadio = document.querySelector('input[name="brand"]:checked');
-            const status = document.getElementById('sales-status-select').value;
+            const roleSelect = document.getElementById('role-select');
             
-            if (!selectedBrandRadio || !status) return;
+            if (!selectedBrandRadio || !roleSelect) return;
             const selectedBrand = selectedBrandRadio.value.toUpperCase(); 
+            const selectedRole = roleSelect.value;
+            
+            const salesPositionSelect = document.getElementById('sales-position-select');
+            const selectedPosition = salesPositionSelect ? salesPositionSelect.value : '';
 
-            if (status === 'non_sales') {
-                if (!tsStandard) return;
-                tsStandard.clearOptions();
-                const rows = document.querySelectorAll('#non-sales-table tbody tr');
-                rows.forEach(row => {
-                    const cells = row.querySelectorAll('td');
-                    if (cells.length < 2) return;
-                    const id = cells[0].textContent.trim();
-                    const name = cells[1].textContent.trim();
-                    tsStandard.addOption({ value: `${id} - ${name}`, text: `${id} - ${name}`, employeeName: name });
-                });
-                tsStandard.refreshOptions(false);
-            } else {
+            if (selectedRole !== 'internal_sales') {
                 if (!tsDse) return;
                 tsDse.clearOptions();
                 const rows = document.querySelectorAll('#dse-data-table tbody tr');
@@ -1332,6 +833,30 @@
                     if (brandMatches) { tsDse.addOption({ value: id, text: id }); }
                 });
                 tsDse.refreshOptions(false);
+            } else {
+                if (!tsStandard) return;
+                tsStandard.clearOptions();
+                const targetPosition = selectedPosition;
+                const rows = document.querySelectorAll('#employee-data-table tbody tr');
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length < 4) return;
+                    const tableBrand = cells[0].textContent.trim().toUpperCase();
+                    const tablePosition = cells[1].textContent.trim().toLowerCase();
+                    const id = cells[2].textContent.trim();
+                    const name = cells[3].textContent.trim();
+                    const brandMatches = (tableBrand === selectedBrand) || (tableBrand === 'IOH' && (selectedBrand === 'IM3' || selectedBrand === '3ID'));
+                    let positionMatches = false;
+                    if (targetPosition === 'cse_rse') {
+                        positionMatches = (tablePosition === 'cse' || tablePosition === 'rse' || tablePosition === 'cse_rse');
+                    } else {
+                        positionMatches = (tablePosition === targetPosition.toLowerCase());
+                    }
+                    if (brandMatches && positionMatches) {
+                        tsStandard.addOption({ value: `${id} - ${name}`, text: `${id} - ${name}`, employeeName: name });
+                    }
+                });
+                tsStandard.refreshOptions(false);
             }
         }
     </script>
