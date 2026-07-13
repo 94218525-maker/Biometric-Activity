@@ -322,7 +322,9 @@
                 <!-- Standard Mode: Shows for Internal Sales and Non-Sales -->
                 <div id="standard-lookup-wrapper">
                     <label for="id-name-select">Search ID or Name</label>
-                    <select id="id-name-select" name="id_name" placeholder="Type to search..." autocomplete="off"></select>
+                    <select id="id-name-select" name="id_name" placeholder="Type to search..." autocomplete="off">
+                        <option value=""></option>
+                    </select>
                 </div>
 
                 <!-- DSE Tracks Mode: Shows for DSE All, DSE Promotor, Dedicated Promotor -->
@@ -330,7 +332,9 @@
                     <div class="dse-flex-container">
                         <div>
                             <label for="dse-id-select">Search DSE ID</label>
-                            <select id="dse-id-select" name="dse_id" placeholder="Select ID..." autocomplete="off"></select>
+                            <select id="dse-id-select" name="dse_id" placeholder="Select ID..." autocomplete="off">
+                                <option value=""></option>
+                            </select>
                         </div>
                         <div>
                             <label for="dse-name-input">DSE Name</label>
@@ -453,19 +457,16 @@
             const container = document.getElementById('form-container');
 
             form.addEventListener('submit', function(event) {
-                event.preventDefault(); // Stifles the native server submit crash
+                event.preventDefault(); 
                 submitBtn.disabled = true;
                 submitBtn.textContent = "Locating...";
 
-                // Handle geolocation coordinates assignment smoothly before transition
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(
                         function(position) {
                             document.getElementById('geo-latitude').value = position.coords.latitude;
                             document.getElementById('geo-longitude').value = position.coords.longitude;
                             document.getElementById('checkin-time').value = new Date().toISOString();
-                            
-                            // Visual screen dynamic replacement to avoid endpoint errors
                             showThankYouScreen();
                         }, 
                         function(error) {
@@ -669,11 +670,13 @@
         function loadTableData() {
             const selectedBrandRadio = document.querySelector('input[name="brand"]:checked');
             const roleSelect = document.getElementById('role-select');
-            const salesPositionSelect = document.getElementById('sales-position-section select');
+            
             if (!selectedBrandRadio || !roleSelect) return;
             const selectedBrand = selectedBrandRadio.value.toUpperCase(); 
             const selectedRole = roleSelect.value;
-            const selectedPosition = document.getElementById('sales-position-select').value;
+            
+            const salesPositionSelect = document.getElementById('sales-position-select');
+            const selectedPosition = salesPositionSelect ? salesPositionSelect.value : '';
 
             if (selectedRole === 'non_sales') {
                 if (!tsStandard) return;
