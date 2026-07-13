@@ -145,7 +145,7 @@
         }
 
         /* Tom Select Flat Override */
-        .ts-wrapper.form-select { padding: 0 !important; border: none; background: transparent; }
+        .ts-wrapper { width: 100%; box-sizing: border-box; }
         .ts-control { 
             border-radius: 8px !important; 
             padding: 0.85rem 1rem !important; 
@@ -155,6 +155,7 @@
             box-shadow: none !important;
             font-weight: 500;
             transition: all 0.2s ease;
+            color: var(--text-main);
         }
         .ts-wrapper.focus .ts-control {
             background-color: #fff !important;
@@ -593,6 +594,7 @@
             document.getElementById('dse-name-input').value = '';
         }
 
+        /* Question 6 visibility triggers updated to standard target layout style */
         function showQuestion6() {
             document.getElementById('location-type-section').style.display = 'block';
             document.getElementById('location-type-select').setAttribute('required', 'true');
