@@ -290,25 +290,17 @@
                 </div>
             </div>
 
-            <!-- Question: Sales Status -->
+            <!-- New Question: Sales Status -->
             <div class="form-group" id="sales-status-section" style="display: none;">
                 <label for="sales-status-select">Sales Status</label>
                 <select id="sales-status-select" name="sales_status" class="form-select" onchange="handleSalesStatusChange()">
-                    <option value="" disabled selected hidden>Choose Status...</option>
+                    <option value="" disabled selected hidden>Select Sales Status...</option>
                     <option value="sales">Sales</option>
                     <option value="non_sales">Non-Sales</option>
                 </select>
             </div>
 
-            <!-- Question: Dedicated Non-Sales ID or Name Search -->
-            <div class="form-group" id="non-sales-lookup-wrapper" style="display: none;">
-                <label for="non-sales-select">Search Non-Sales ID or Name</label>
-                <select id="non-sales-select" name="id_name_non_sales" placeholder="Type to search non-sales..." autocomplete="off">
-                    <option value=""></option>
-                </select>
-            </div>
-
-            <!-- Question 2: Role Selection (Only for Sales Status = Sales) -->
+            <!-- Question 2: Role Selection (Non-Sales option removed) -->
             <div class="form-group" id="role-section" style="display: none;">
                 <label for="role-select">Role Category</label>
                 <select id="role-select" name="role_category" class="form-select" onchange="handleRoleChange()">
@@ -331,7 +323,7 @@
                 </select>
             </div>
 
-            <!-- Question 4: Dynamic Lookup Wrapper (Only for Sales) -->
+            <!-- Question 4: Dynamic Lookup Wrapper -->
             <div class="form-group" id="question-4-section" style="display: none;">
                 <div id="standard-lookup-wrapper">
                     <label for="id-name-select">Search ID or Name</label>
@@ -437,7 +429,6 @@
     <script>
         let tsStandard = null;
         let tsDse = null;
-        let tsNonSales = null;
         const MAX_MSISDN = 5;
 
         document.addEventListener("DOMContentLoaded", function() {
@@ -452,13 +443,6 @@
                 sortField: { field: "value", direction: "asc" },
                 placeholder: "Search ID...",
                 onChange: function(value) { checkDseCompletion(); }
-            });
-
-            // New instances for tracking Dedicated Non-Sales table specifically
-            tsNonSales = new TomSelect('#non-sales-select', {
-                create: false, valueField: 'value', labelField: 'text', searchField: ['text'],
-                sortField: { field: "employeeName", direction: "asc" },
-                onChange: function(value) { if(value) { showQuestion6(); } else { hideQuestion6(); } }
             });
 
             document.getElementById('dse-name-input').addEventListener('input', function() {
@@ -556,13 +540,12 @@
             }
             
             // RESET CASCADING QUESTIONS DOWNSTREAM
-            const statusSelect = document.getElementById('sales-status-select');
-            statusSelect.value = '';
+            document.getElementById('sales-status-select').value = '';
             
             const roleSelect = document.getElementById('role-select');
             roleSelect.value = '';
-            document.getElementById('role-section').style.display = 'none';
             roleSelect.removeAttribute('required');
+            document.getElementById('role-section').style.display = 'none';
             
             const salesPositionSelect = document.getElementById('sales-position-select');
             salesPositionSelect.value = '';
@@ -571,39 +554,32 @@
 
             hideQuestion4();
             
+            // Show the next step (Sales Status)
             document.getElementById('sales-status-section').style.display = 'block';
+            document.getElementById('sales-status-select').setAttribute('required', 'true');
         }
 
         function handleSalesStatusChange() {
             const statusSelect = document.getElementById('sales-status-select');
             const roleSection = document.getElementById('role-section');
             const roleSelect = document.getElementById('role-select');
+            const salesPositionSection = document.getElementById('sales-position-section');
             const salesPositionSelect = document.getElementById('sales-position-select');
-            const nonSalesWrapper = document.getElementById('non-sales-lookup-wrapper');
-            const nonSalesSelect = document.getElementById('non-sales-select');
             
             // RESET CASCADING QUESTIONS DOWNSTREAM
             roleSelect.value = '';
             salesPositionSelect.value = '';
-            document.getElementById('sales-position-section').style.display = 'none';
+            salesPositionSection.style.display = 'none';
             salesPositionSelect.removeAttribute('required');
             hideQuestion4();
 
             if (statusSelect.value === 'sales') {
-                nonSalesWrapper.style.display = 'none';
-                nonSalesSelect.removeAttribute('required');
-                if(tsNonSales) tsNonSales.clear();
-
                 roleSection.style.display = 'block';
                 roleSelect.setAttribute('required', 'true');
             } else if (statusSelect.value === 'non_sales') {
                 roleSection.style.display = 'none';
                 roleSelect.removeAttribute('required');
-                
-                // Show non-sales search wrapper directly
-                nonSalesWrapper.style.display = 'block';
-                nonSalesSelect.setAttribute('required', 'true');
-                loadNonSalesData();
+                showQuestion4(); // Go straight to search for Non-Sales
             }
         }
 
@@ -637,46 +613,30 @@
             }
         }
 
-        function loadNonSalesData() {
-            if (!tsNonSales) return;
-            tsNonSales.clearOptions();
-            const rows = document.querySelectorAll('#non-sales-table tbody tr');
-            rows.forEach(row => {
-                const cells = row.querySelectorAll('td');
-                if (cells.length < 2) return;
-                const id = cells[0].textContent.trim();
-                const name = cells[1].textContent.trim();
-                tsNonSales.addOption({ value: `${id} - ${name}`, text: `${id} - ${name}`, employeeName: name });
-            });
-            tsNonSales.refreshOptions(false);
-        }
-
         function showQuestion4() {
+            const statusSelect = document.getElementById('sales-status-select').value;
             const roleSelect = document.getElementById('role-select').value;
             document.getElementById('question-4-section').style.display = 'block';
 
-            if (roleSelect !== 'internal_sales') {
-                document.getElementById('standard-lookup-wrapper').style.display = 'none';
-                document.getElementById('dse-lookup-wrapper').style.display = 'block';
-                document.getElementById('dse-name-input').setAttribute('required', 'true');
-            } else {
+            // Check if status is non_sales OR if role is internal_sales
+            if (statusSelect === 'non_sales' || roleSelect === 'internal_sales') {
                 document.getElementById('standard-lookup-wrapper').style.display = 'block';
                 document.getElementById('dse-lookup-wrapper').style.display = 'none';
                 document.getElementById('dse-name-input').removeAttribute('required');
                 document.getElementById('dse-name-input').value = '';
+            } else {
+                document.getElementById('standard-lookup-wrapper').style.display = 'none';
+                document.getElementById('dse-lookup-wrapper').style.display = 'block';
+                document.getElementById('dse-name-input').setAttribute('required', 'true');
             }
             loadTableData();
         }
 
         function hideQuestion4() {
             document.getElementById('question-4-section').style.display = 'none';
-            document.getElementById('non-sales-lookup-wrapper').style.display = 'none';
-            document.getElementById('non-sales-select').removeAttribute('required');
-            
             hideQuestion6();
             if(tsStandard) { tsStandard.clear(); tsStandard.clearOptions(); }
             if(tsDse) { tsDse.clear(); tsDse.clearOptions(); }
-            if(tsNonSales) { tsNonSales.clear(); tsNonSales.clearOptions(); }
             document.getElementById('dse-name-input').value = '';
         }
 
@@ -811,16 +771,31 @@
 
         function loadTableData() {
             const selectedBrandRadio = document.querySelector('input[name="brand"]:checked');
-            const roleSelect = document.getElementById('role-select');
+            const statusSelect = document.getElementById('sales-status-select');
             
-            if (!selectedBrandRadio || !roleSelect) return;
+            if (!selectedBrandRadio || !statusSelect) return;
             const selectedBrand = selectedBrandRadio.value.toUpperCase(); 
-            const selectedRole = roleSelect.value;
+            const selectedStatus = statusSelect.value;
+            
+            const roleSelect = document.getElementById('role-select');
+            const selectedRole = roleSelect ? roleSelect.value : '';
             
             const salesPositionSelect = document.getElementById('sales-position-select');
             const selectedPosition = salesPositionSelect ? salesPositionSelect.value : '';
 
-            if (selectedRole !== 'internal_sales') {
+            if (selectedStatus === 'non_sales') {
+                if (!tsStandard) return;
+                tsStandard.clearOptions();
+                const rows = document.querySelectorAll('#non-sales-table tbody tr');
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length < 2) return;
+                    const id = cells[0].textContent.trim();
+                    const name = cells[1].textContent.trim();
+                    tsStandard.addOption({ value: `${id} - ${name}`, text: `${id} - ${name}`, employeeName: name });
+                });
+                tsStandard.refreshOptions(false);
+            } else if (selectedRole !== 'internal_sales' && selectedRole !== '') {
                 if (!tsDse) return;
                 tsDse.clearOptions();
                 const rows = document.querySelectorAll('#dse-data-table tbody tr');
@@ -833,7 +808,7 @@
                     if (brandMatches) { tsDse.addOption({ value: id, text: id }); }
                 });
                 tsDse.refreshOptions(false);
-            } else {
+            } else if (selectedRole === 'internal_sales') {
                 if (!tsStandard) return;
                 tsStandard.clearOptions();
                 const targetPosition = selectedPosition;
@@ -861,3 +836,4 @@
         }
     </script>
 </body>
+</html>
