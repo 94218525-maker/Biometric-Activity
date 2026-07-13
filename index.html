@@ -468,18 +468,69 @@
                             document.getElementById('geo-latitude').value = position.coords.latitude;
                             document.getElementById('geo-longitude').value = position.coords.longitude;
                             document.getElementById('checkin-time').value = new Date().toISOString();
-                            showThankYouScreen();
+                            sendDataToGoogleSheets();
                         }, 
                         function(error) {
-                            alert("Location access needed. Continuing submission without absolute coordinates...");
-                            showThankYouScreen();
+                            alert("Location access denied or timed out. Submitting without coordinates.");
+                            document.getElementById('checkin-time').value = new Date().toISOString();
+                            sendDataToGoogleSheets();
                         },
                         { enableHighAccuracy: true, timeout: 6000 }
                     );
                 } else {
-                    showThankYouScreen();
+                    document.getElementById('checkin-time').value = new Date().toISOString();
+                    sendDataToGoogleSheets();
                 }
             });
+
+            function sendDataToGoogleSheets() {
+                submitBtn.textContent = "Submitting Data...";
+                
+                // Your live deployment script endpoint (swapped from /dev to /exec)
+                const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxQwLQwXH8DAABEjr_u1BoSBz9CgjhWAo7Rf7WFCps/exec";
+
+                const formData = new FormData(form);
+                const formObject = {};
+                
+                // Format the standard fields
+                formData.forEach((value, key) => {
+                    if (key.endsWith('[]')) {
+                        const cleanKey = key.replace('[]', '');
+                        if (!formObject[cleanKey]) formObject[cleanKey] = [];
+                        if (value.trim() !== "") formObject[cleanKey].push(value);
+                    } else {
+                        formObject[key] = value;
+                    }
+                });
+
+                // Extract single string conditional location details 
+                const locType = document.getElementById('location-type-select').value;
+                let locDetail = "";
+                if(locType === 'kro') locDetail = document.getElementById('input-kro').value;
+                if(locType === 'kampus') locDetail = document.getElementById('input-kampus').value;
+                if(locType === 'residential') locDetail = document.getElementById('input-residential').value;
+                if(locType === 'pasar') locDetail = document.getElementById('input-pasar').value;
+                if(locType === 'others') locDetail = document.getElementById('input-others').value;
+                
+                formObject['location_detail'] = locDetail;
+
+                // POST directly to Google Sheets script
+                fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formObject)
+                })
+                .then(() => {
+                    showThankYouScreen();
+                })
+                .catch(error => {
+                    console.error('Submission Error:', error);
+                    alert("Submission failed. Check network connection.");
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = "Submit Activity";
+                });
+            }
 
             function showThankYouScreen() {
                 container.innerHTML = `
@@ -492,14 +543,11 @@
             }
         });
 
-        // HANDLE BRAND SELECTION SWITCHING COLOR SCHEME AND PAGE BACKGROUND
         function handleBrandChange() {
             const selectedBrandRadio = document.querySelector('input[name="brand"]:checked');
-            
             if (selectedBrandRadio) {
                 document.documentElement.setAttribute('data-brand', selectedBrandRadio.value);
             }
-
             document.getElementById('role-section').style.display = 'block';
             if (document.getElementById('question-4-section').style.display === 'block') { loadTableData(); }
         }
@@ -511,12 +559,10 @@
             if (currentFieldsCount < MAX_MSISDN) {
                 const rowDiv = document.createElement('div');
                 rowDiv.className = 'msisdn-row';
-                
                 rowDiv.innerHTML = `
                     <input type="text" name="msisdn[]" class="form-control" placeholder="Masukkan MSISDN..." inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
                     <button type="button" class="btn-remove" onclick="removeMsisdnField(this)">✕</button>
                 `;
-                
                 container.appendChild(rowDiv);
                 updateMsisdnButtonState();
             }
@@ -594,7 +640,6 @@
             document.getElementById('dse-name-input').value = '';
         }
 
-        /* Question 6 visibility triggers updated to standard target layout style */
         function showQuestion6() {
             document.getElementById('location-type-section').style.display = 'block';
             document.getElementById('location-type-select').setAttribute('required', 'true');
@@ -731,114 +776,6 @@
                 tsStandard.refreshOptions(false);
             }
         }
-        document.addEventListener("DOMContentLoaded", function() {
-            tsStandard = new TomSelect('#id-name-select', {
-                create: false, valueField: 'value', labelField: 'text', searchField: ['text'],
-                sortField: { field: "employeeName", direction: "asc" },
-                onChange: function(value) { if(value) { showQuestion6(); } else { hideQuestion6(); } }
-            });
-
-            tsDse = new TomSelect('#dse-id-select', {
-                create: false, valueField: 'value', labelField: 'text', searchField: ['text'],
-                sortField: { field: "value", direction: "asc" },
-                placeholder: "Search ID...",
-                onChange: function(value) { checkDseCompletion(); }
-            });
-
-            document.getElementById('dse-name-input').addEventListener('input', function() {
-                checkDseCompletion();
-            });
-
-            const form = document.getElementById('activity-form');
-            const submitBtn = document.getElementById('submit-btn');
-            const container = document.getElementById('form-container');
-
-            form.addEventListener('submit', function(event) {
-                event.preventDefault(); 
-                submitBtn.disabled = true;
-                submitBtn.textContent = "Locating...";
-
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        function(position) {
-                            document.getElementById('geo-latitude').value = position.coords.latitude;
-                            document.getElementById('geo-longitude').value = position.coords.longitude;
-                            document.getElementById('checkin-time').value = new Date().toISOString();
-                            sendDataToGoogleSheets();
-                        }, 
-                        function(error) {
-                            alert("Location access denied or timed out. Submitting without coordinates.");
-                            document.getElementById('checkin-time').value = new Date().toISOString();
-                            sendDataToGoogleSheets();
-                        },
-                        { enableHighAccuracy: true, timeout: 6000 }
-                    );
-                } else {
-                    document.getElementById('checkin-time').value = new Date().toISOString();
-                    sendDataToGoogleSheets();
-                }
-            });
-
-            function sendDataToGoogleSheets() {
-                submitBtn.textContent = "Submitting Data...";
-                
-                // paste your Google Apps Script URL here:
-                const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwycxY7pNON2gN9g4dwhkP1Gz4ezKusvKIA5dcE6F5V0eq-tf42k2ofkx37xdwGfKug/exec";
-
-                const formData = new FormData(form);
-                const formObject = {};
-                
-                // Format the dynamic form inputs natively
-                formData.forEach((value, key) => {
-                    if (key.endsWith('[]')) {
-                        const cleanKey = key.replace('[]', '');
-                        if (!formObject[cleanKey]) formObject[cleanKey] = [];
-                        if (value.trim() !== "") formObject[cleanKey].push(value);
-                    } else {
-                        formObject[key] = value;
-                    }
-                });
-
-                // Extract dynamic location details natively depending on selection
-                const locType = document.getElementById('location-type-select').value;
-                let locDetail = "";
-                if(locType === 'kro') locDetail = document.getElementById('input-kro').value;
-                if(locType === 'kampus') locDetail = document.getElementById('input-kampus').value;
-                if(locType === 'residential') locDetail = document.getElementById('input-residential').value;
-                if(locType === 'pasar') locDetail = document.getElementById('input-pasar').value;
-                if(locType === 'others') locDetail = document.getElementById('input-others').value;
-                
-                formObject['location_detail'] = locDetail;
-
-                // POST directly to Google Sheets script
-                fetch(WEB_APP_URL, {
-                    method: 'POST',
-                    mode: 'no-cors', // Bypasses CORS browser restrictions for cross-origin tracking
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formObject)
-                })
-                .then(() => {
-                    // Because 'no-cors' mode is active, browser will treat response code as opaque success
-                    showThankYouScreen();
-                })
-                .catch(error => {
-                    console.error('Submission Error:', error);
-                    alert("Submission failed. Check network connection.");
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = "Submit Activity";
-                });
-            }
-
-            function showThankYouScreen() {
-                container.innerHTML = `
-                    <div class="thank-you-card">
-                        <div class="thank-you-icon">✓</div>
-                        <h3>Thank you for submitting this form</h3>
-                        <p>Your biometric activity log has been recorded successfully.</p>
-                    </div>
-                `;
-            }
-        });
     </script>
 </body>
 </html>
