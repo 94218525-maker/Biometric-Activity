@@ -271,7 +271,6 @@
             <input type="hidden" id="geo-longitude" name="longitude">
             <input type="hidden" id="checkin-time" name="checkin_time">
             
-            <!-- Question 1: Brand -->
             <div class="form-group">
                 <label>Brand</label>
                 <div class="radio-group-container">
@@ -290,29 +289,26 @@
                 </div>
             </div>
 
-            <!-- New Question: Sales Status -->
             <div class="form-group" id="sales-status-section" style="display: none;">
                 <label for="sales-status-select">Sales Status</label>
                 <select id="sales-status-select" name="sales_status" class="form-select" onchange="handleSalesStatusChange()">
                     <option value="" disabled selected hidden>Select Sales Status...</option>
                     <option value="sales">Sales</option>
-                    <option value="non_sales">Non-Sales</option>
+                    <option value="non_sales" id="opt-non-sales">Non-Sales</option>
                 </select>
             </div>
 
-            <!-- Question 2: Role Selection (Non-Sales option removed) -->
             <div class="form-group" id="role-section" style="display: none;">
                 <label for="role-select">Role Category</label>
                 <select id="role-select" name="role_category" class="form-select" onchange="handleRoleChange()">
                     <option value="" disabled selected hidden>Choose Role...</option>
                     <option value="internal_sales">Internal Sales</option>
                     <option value="dse_all">DSE All</option>
-                    <option value="dse_promotor">DSE Promotor</option>
+                    <option value="dse_promotor" id="opt-dse-promotor">DSE Promotor</option>
                     <option value="dedicated_promotor">Dedicated Promotor</option>
                 </select>
             </div>
 
-            <!-- Question 3: Sales Position -->
             <div class="form-group" id="sales-position-section" style="display: none;">
                 <label for="sales-position-select">Sales Position</label>
                 <select id="sales-position-select" name="sales_position" class="form-select" onchange="handlePositionChange()">
@@ -323,7 +319,6 @@
                 </select>
             </div>
 
-            <!-- Question 4: Dynamic Lookup Wrapper -->
             <div class="form-group" id="question-4-section" style="display: none;">
                 <div id="standard-lookup-wrapper">
                     <label for="id-name-select">Search ID or Name</label>
@@ -337,7 +332,7 @@
                         <div>
                             <label for="dse-id-select">Search DSE ID</label>
                             <select id="dse-id-select" name="dse_id" placeholder="Select ID..." autocomplete="off">
-                                <option value=""></option>
+                                    <option value=""></option>
                             </select>
                         </div>
                         <div>
@@ -348,20 +343,18 @@
                 </div>
             </div>
 
-            <!-- Question 6: Location Type -->
             <div class="form-group" id="location-type-section" style="display: none;">
                 <label for="location-type-select">Location Type</label>
                 <select id="location-type-select" name="location_type" class="form-select" onchange="handleLocationTypeChange()">
                     <option value="" disabled selected hidden>Select Location Type...</option>
-                    <option value="kro">KRO</option>
-                    <option value="kampus">Kampus</option>
-                    <option value="residential">Residential</option>
-                    <option value="pasar">Pasar</option>
-                    <option value="others">Others</option>
+                    <option value="kro" id="loc-kro">KRO</option>
+                    <option value="kampus" id="loc-kampus">Kampus</option>
+                    <option value="residential" id="loc-residential">Residential</option>
+                    <option value="pasar" id="loc-pasar">Pasar</option>
+                    <option value="others" id="loc-others">Others</option>
                 </select>
             </div>
 
-            <!-- Dynamic Detail Container -->
             <div class="form-group" id="location-detail-container" style="display: none;">
                 <div id="wrapper-kro" class="location-detail-field" style="display: none;">
                     <label for="input-kro">ID Outlet</label>
@@ -385,17 +378,14 @@
                 </div>
             </div>
 
-            <!-- Question 6.1: Nama Kegiatan -->
             <div class="form-group" id="wrapper-nama-kegiatan" style="display: none;">
                 <label for="input-nama-kegiatan">Nama Kegiatan</label>
                 <input type="text" id="input-nama-kegiatan" name="nama_kegiatan" class="form-control" placeholder="Masukkan Nama Kegiatan" oninput="this.value = this.value.toUpperCase()">
             </div>
 
-            <!-- Question 7: Split MSISDN Fields Container (Auto pre-fill 62) -->
             <div class="form-group" id="msisdn-section" style="display: none;">
                 <label>MSISDN inputs (Max 5)</label>
                 <div id="msisdn-fields-container">
-                    <!-- Base MSISDN Row 1 -->
                     <div class="msisdn-row" data-index="1">
                         <span class="msisdn-prefix">MSISDN 1</span>
                         <input type="text" id="msisdn-input-1" class="form-control" value="62" inputmode="numeric" pattern="[0-9]*" oninput="validateMsisdnInput(this)">
@@ -405,14 +395,12 @@
                 <span id="msisdn-limit-msg" class="limit-message" style="display: none;">Maximum entry limit is 5 numbers.</span>
             </div>
 
-            <!-- Submit Action -->
             <div id="submit-section" style="display: none;">
                 <button type="submit" id="submit-btn" class="btn-submit">Submit Activity</button>
             </div>
         </form>
     </div>
 
-    <!-- Hidden Data References -->
     <table id="non-sales-table" style="display: none;"><tbody>
         <tr><td>72015056</td><td>ERIC DANARI</td></tr>
 <tr><td>74013503</td><td>RADITYO PRAMUDITO</td></tr>
@@ -504,6 +492,18 @@
 <tr><td>IOH</td><td>RSE</td><td>AM2309015083</td><td>TAUFIK AKBAR</td></tr>
 <tr><td>IM3</td><td>RSE</td><td>AM2309014693</td><td>TERI HENDRA</td></tr>
 <tr><td>3ID</td><td>RSE</td><td>AM2308013473</td><td>YOHAN ANDREA SARAGI</td></tr>
+<tr><td>3ID</td><td>CSE</td><td>82228708</td><td>DENY AHMAD SALEH</td></tr>
+<tr><td>3ID</td><td>CSE</td><td>87218424</td><td>ADITYA</td></tr>
+<tr><td>3ID</td><td>CSE</td><td>90260951</td><td>FIRMAN ADY NOER</td></tr>
+<tr><td>3ID</td><td>CSE</td><td>91260952</td><td>MUHAMAD FAZRI FACHRUDIN</td></tr>
+<tr><td>3ID</td><td>CSE</td><td>87229587</td><td>EDWIN FEBRIANA</td></tr>
+<tr><td>3ID</td><td>CSE</td><td>86146780</td><td>RAHMAT SYAEFULLAH</td></tr>
+<tr><td>3ID</td><td>CSE</td><td>95239662</td><td>SUTAN SAMUDRA</td></tr>
+<tr><td>3ID</td><td>CSE</td><td>94250639</td><td>AFRIZAL REYNALDI</td></tr>
+<tr><td>3ID</td><td>CSE</td><td>91239660</td><td>MAULANA</td></tr>
+<tr><td>3ID</td><td>CSE</td><td>83228718</td><td>IKA JATNIKA</td></tr>
+<tr><td>3ID</td><td>CSE</td><td>89229019</td><td>DEBORA SEPTELITA MANURUNG</td></tr>
+<tr><td>3ID</td><td>CSE</td><td>86228940</td><td>HAMDI APRIATNA</td></tr>
     </tbody></table>
     
     <table id="dse-data-table" style="display: none;"><tbody>
@@ -842,7 +842,6 @@
 <tr><td>3ID</td><td>1-28825212236</td></tr>
 <tr><td>3ID</td><td>1-28825212246</td></tr>
 <tr><td>3ID</td><td>1-28825212248</td></tr>
-<tr><td>3ID</td><td>(blank)</td></tr>
 <tr><td>3ID</td><td>2613050923</td></tr>
 <tr><td>3ID</td><td>2613050924</td></tr>
 <tr><td>3ID</td><td>2613051163</td></tr>
@@ -879,7 +878,6 @@
 <tr><td>3ID</td><td>1-28825212244</td></tr>
 <tr><td>3ID</td><td>1-28825212250</td></tr>
 <tr><td>3ID</td><td>1-28898503783</td></tr>
-<tr><td>3ID</td><td>(blank)</td></tr>
 <tr><td>3ID</td><td>1-114867644860</td></tr>
 <tr><td>3ID</td><td>1-135556558562</td></tr>
 <tr><td>3ID</td><td>1-168828419661</td></tr>
@@ -896,7 +894,6 @@
 <tr><td>3ID</td><td>2-0012364436</td></tr>
 <tr><td>3ID</td><td>2-0012364437</td></tr>
 <tr><td>3ID</td><td>2-0012364438</td></tr>
-<tr><td>3ID</td><td>(blank)</td></tr>
 <tr><td>3ID</td><td>2613050912</td></tr>
 <tr><td>3ID</td><td>1-135556141466</td></tr>
 <tr><td>3ID</td><td>1-163544572541</td></tr>
@@ -913,7 +910,6 @@
 <tr><td>3ID</td><td>2-0012364428</td></tr>
 <tr><td>3ID</td><td>2-0012364430</td></tr>
 <tr><td>3ID</td><td>2-0012364535</td></tr>
-<tr><td>3ID</td><td>(blank)</td></tr>
 <tr><td>3ID</td><td>1-136128746539</td></tr>
 <tr><td>3ID</td><td>1-136128746591</td></tr>
 <tr><td>3ID</td><td>1-136150144446</td></tr>
@@ -939,7 +935,6 @@
 <tr><td>3ID</td><td>1-28825212308</td></tr>
 <tr><td>3ID</td><td>1-28825212310</td></tr>
 <tr><td>3ID</td><td>1-91735122850</td></tr>
-<tr><td>3ID</td><td>(blank)</td></tr>
 <tr><td>3ID</td><td>1-112454158079</td></tr>
 <tr><td>3ID</td><td>1-136000006487</td></tr>
 <tr><td>3ID</td><td>1-136000006523</td></tr>
@@ -975,7 +970,6 @@
 <tr><td>3ID</td><td>2-0012364246</td></tr>
 <tr><td>3ID</td><td>2-0012364249</td></tr>
 <tr><td>3ID</td><td>2-0012364250</td></tr>
-<tr><td>3ID</td><td>(blank)</td></tr>
 <tr><td>3ID</td><td>2613051169</td></tr>
 <tr><td>3ID</td><td>2613051170</td></tr>
 <tr><td>3ID</td><td>1-135556141387</td></tr>
@@ -1002,7 +996,6 @@
 <tr><td>3ID</td><td>1-28825212733</td></tr>
 <tr><td>3ID</td><td>1-28825212745</td></tr>
 <tr><td>3ID</td><td>1-28825212747</td></tr>
-<tr><td>3ID</td><td>(blank)</td></tr>
 <tr><td>3ID</td><td>2613051253</td></tr>
 <tr><td>3ID</td><td>1-135943118475</td></tr>
 <tr><td>3ID</td><td>1-135944887495</td></tr>
@@ -1081,31 +1074,89 @@
 <tr><td>3ID</td><td>2-0012347765</td></tr>
     </tbody></table>
 
+    <table id="dse-promotor-table" style="display: none;"><tbody>
+        <tr><td>IM3</td><td>DSECBNG23</td></tr>
+<tr><td>IM3</td><td>DSELUIG12</td></tr>
+<tr><td>IM3</td><td>CVSCJU008</td></tr>
+<tr><td>IM3</td><td>CVSCJU020</td></tr>
+<tr><td>IM3</td><td>6CVSSKBI</td></tr>
+<tr><td>IM3</td><td>DSEKTSI04</td></tr>
+<tr><td>IM3</td><td>2613051228</td></tr>
+<tr><td>IM3</td><td>DSELBKA14</td></tr>
+<tr><td>IM3</td><td>DSEKTCN05</td></tr>
+<tr><td>IM3</td><td>DSE1385</td></tr>
+<tr><td>IM3</td><td>DSESRGT08</td></tr>
+<tr><td>IM3</td><td>DSECPT10</td></tr>
+<tr><td>IM3</td><td>DSEPGDN12</td></tr>
+<tr><td>IM3</td><td>DSEKRWI02</td></tr>
+<tr><td>IM3</td><td>DSECPNH06</td></tr>
+<tr><td>3ID</td><td>1-135633751048</td></tr>
+<tr><td>3ID</td><td>1-28825212172</td></tr>
+<tr><td>3ID</td><td>1-28825212232</td></tr>
+<tr><td>3ID</td><td>1-28825212156</td></tr>
+<tr><td>3ID</td><td>1-28825212186</td></tr>
+<tr><td>3ID</td><td>1-28825212190</td></tr>
+<tr><td>3ID</td><td>1-136128746591</td></tr>
+<tr><td>3ID</td><td>1-136125634935</td></tr>
+<tr><td>3ID</td><td>1-136125634961</td></tr>
+<tr><td>3ID</td><td>1-28825212733</td></tr>
+<tr><td>3ID</td><td>1-136195824078</td></tr>
+<tr><td>3ID</td><td>1-28825211952</td></tr>
+<tr><td>3ID</td><td>1-28825212002</td></tr>
+    </tbody></table>
+
+    <table id="dse-dedicated-promotor-table" style="display: none;"><tbody>
+    </tbody></table>
+
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
     <script>
         let tsStandard = null;
         let tsDse = null;
         const MAX_MSISDN = 5;
 
-        // Custom validation function to pre-fill and lock the "62" prefix
         function validateMsisdnInput(input) {
-            // Remove all non-digits
             let digits = input.value.replace(/[^0-9]/g, '');
-            
-            // If the field becomes shorter than 2 digits or doesn't start with 62, force fix it
             if (digits.length < 2 || !digits.startsWith('62')) {
-                // Check if they accidentally pasted/typed a value starting with 0 (like 0815...)
                 if (digits.startsWith('0')) {
                     digits = '62' + digits.substring(1);
                 } else {
                     digits = '62';
                 }
             }
-            
             input.value = digits;
         }
 
         document.addEventListener("DOMContentLoaded", function() {
+            // --- JAKARTA TIME AND DAY VALIDATION ---
+            const now = new Date();
+            const jakartaString = now.toLocaleString("en-US", { timeZone: "Asia/Jakarta" });
+            const jakartaDate = new Date(jakartaString);
+
+            const currentDay = jakartaDate.getDay();   // 0 = Sunday, 5 = Friday, 6 = Saturday
+            const currentHour = jakartaDate.getHours(); // 0 to 23
+
+            // Rule 1: "DSE Promotor" must only show Wed-Sat, 16:00 to 21:59 WIB
+            const isDsePromotorDay = (currentDay >= 3 && currentDay <= 6); 
+            const isDsePromotorTime = (currentHour >= 16 && currentHour <= 21); 
+
+            if (!isDsePromotorDay || !isDsePromotorTime) {
+                const promotorOption = document.getElementById('opt-dse-promotor');
+                if (promotorOption) {
+                    promotorOption.remove(); 
+                }
+            }
+
+            // Rule 2: "Non-Sales" must only show Friday, 00:00 to 23:59 WIB
+            const isNonSalesDay = (currentDay === 5); 
+
+            if (!isNonSalesDay) {
+                const nonSalesOption = document.getElementById('opt-non-sales');
+                if (nonSalesOption) {
+                    nonSalesOption.remove();
+                }
+            }
+            // -----------------------------------------------------------
+
             tsStandard = new TomSelect('#id-name-select', {
                 create: false, valueField: 'value', labelField: 'text', searchField: ['text'],
                 sortField: { field: "employeeName", direction: "asc" },
@@ -1155,15 +1206,11 @@
 
             function sendDataToGoogleSheets() {
                 submitBtn.textContent = "Submitting Data...";
-                
                 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxTatYQAjbSDH2fU1aJya-KLwobO1_kxFhj6rABM8IFJwh475P2NXofa1B1maJCiXXI/exec";
-
                 const formData = new FormData(form);
                 const formObject = {};
                 
-                formData.forEach((value, key) => {
-                    formObject[key] = value;
-                });
+                formData.forEach((value, key) => { formObject[key] = value; });
 
                 const locType = document.getElementById('location-type-select').value;
                 let locDetail = "";
@@ -1185,9 +1232,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(formObject)
                 })
-                .then(() => {
-                    showThankYouScreen();
-                })
+                .then(() => { showThankYouScreen(); })
                 .catch(error => {
                     console.error('Submission Error:', error);
                     alert("Submission failed. Check network connection.");
@@ -1209,26 +1254,17 @@
 
         function handleBrandChange() {
             const selectedBrandRadio = document.querySelector('input[name="brand"]:checked');
-            if (selectedBrandRadio) {
-                document.documentElement.setAttribute('data-brand', selectedBrandRadio.value);
-            }
-            
-            // RESET CASCADING QUESTIONS DOWNSTREAM
+            if (selectedBrandRadio) { document.documentElement.setAttribute('data-brand', selectedBrandRadio.value); }
             document.getElementById('sales-status-select').value = '';
-            
             const roleSelect = document.getElementById('role-select');
             roleSelect.value = '';
             roleSelect.removeAttribute('required');
             document.getElementById('role-section').style.display = 'none';
-            
             const salesPositionSelect = document.getElementById('sales-position-select');
             salesPositionSelect.value = '';
             document.getElementById('sales-position-section').style.display = 'none';
             salesPositionSelect.removeAttribute('required');
-
             hideQuestion4();
-            
-            // Show the next step (Sales Status)
             document.getElementById('sales-status-section').style.display = 'block';
             document.getElementById('sales-status-select').setAttribute('required', 'true');
         }
@@ -1240,7 +1276,6 @@
             const salesPositionSection = document.getElementById('sales-position-section');
             const salesPositionSelect = document.getElementById('sales-position-select');
             
-            // RESET CASCADING QUESTIONS DOWNSTREAM
             roleSelect.value = '';
             salesPositionSelect.value = '';
             salesPositionSection.style.display = 'none';
@@ -1253,7 +1288,7 @@
             } else if (statusSelect.value === 'non_sales') {
                 roleSection.style.display = 'none';
                 roleSelect.removeAttribute('required');
-                showQuestion4(); // Go straight to search for Non-Sales
+                showQuestion4();
             }
         }
 
@@ -1262,9 +1297,26 @@
             const salesPositionSection = document.getElementById('sales-position-section');
             const salesPositionSelect = document.getElementById('sales-position-select');
             
-            // RESET CASCADING QUESTIONS DOWNSTREAM
             salesPositionSelect.value = '';
             hideQuestion4();
+
+            const optKro = document.getElementById('loc-kro');
+            const optKampus = document.getElementById('loc-kampus');
+            const optResidential = document.getElementById('loc-residential');
+            const optPasar = document.getElementById('loc-pasar');
+            const optOthers = document.getElementById('loc-others');
+
+            if (roleSelect.value === 'dse_promotor') {
+                if (optKampus) optKampus.style.display = 'none';
+                if (optResidential) optResidential.style.display = 'none';
+                if (optPasar) optPasar.style.display = 'none';
+                if (optOthers) optOthers.style.display = 'none';
+            } else {
+                if (optKampus) optKampus.style.display = 'block';
+                if (optResidential) optResidential.style.display = 'block';
+                if (optPasar) optPasar.style.display = 'block';
+                if (optOthers) optOthers.style.display = 'block';
+            }
             
             if (roleSelect.value === 'internal_sales') {
                 salesPositionSection.style.display = 'block';
@@ -1278,13 +1330,8 @@
 
         function handlePositionChange() {
             const salesPositionSelect = document.getElementById('sales-position-select');
-            
-            // RESET CASCADING QUESTIONS DOWNSTREAM
             hideQuestion4();
-            
-            if (salesPositionSelect.value !== "") { 
-                showQuestion4(); 
-            }
+            if (salesPositionSelect.value !== "") { showQuestion4(); }
         }
 
         function showQuestion4() {
@@ -1292,7 +1339,6 @@
             const roleSelect = document.getElementById('role-select').value;
             document.getElementById('question-4-section').style.display = 'block';
 
-            // Check if status is non_sales OR if role is internal_sales
             if (statusSelect === 'non_sales' || roleSelect === 'internal_sales') {
                 document.getElementById('standard-lookup-wrapper').style.display = 'block';
                 document.getElementById('dse-lookup-wrapper').style.display = 'none';
@@ -1320,6 +1366,7 @@
             if(dseId && dseName) { showQuestion6(); } else { hideQuestion6(); }
         }
 
+        // Location Type question section controllers
         function showQuestion6() {
             document.getElementById('location-type-section').style.display = 'block';
             document.getElementById('location-type-select').setAttribute('required', 'true');
@@ -1341,13 +1388,11 @@
             const baseInput = document.getElementById('msisdn-input-1');
             if (baseInput) { 
                 baseInput.removeAttribute('required'); 
-                baseInput.value = '62'; // Reset cleanly back to default state
+                baseInput.value = '62'; 
             }
             
             const rows = document.querySelectorAll('#msisdn-fields-container .msisdn-row');
-            rows.forEach(row => { 
-                if (row.getAttribute('data-index') !== "1") row.remove(); 
-            });
+            rows.forEach(row => { if (row.getAttribute('data-index') !== "1") row.remove(); });
             updateMsisdnButtonState();
 
             document.getElementById('submit-section').style.display = 'none';
@@ -1402,7 +1447,6 @@
         function addMsisdnField() {
             const container = document.getElementById('msisdn-fields-container');
             const currentRows = container.getElementsByClassName('msisdn-row');
-            
             const currentIndices = Array.from(currentRows).map(row => parseInt(row.getAttribute('data-index')));
             let nextIndex = 1;
             for (let i = 1; i <= 5; i++) {
@@ -1453,10 +1497,8 @@
             if (!selectedBrandRadio || !statusSelect) return;
             const selectedBrand = selectedBrandRadio.value.toUpperCase(); 
             const selectedStatus = statusSelect.value;
-            
             const roleSelect = document.getElementById('role-select');
             const selectedRole = roleSelect ? roleSelect.value : '';
-            
             const salesPositionSelect = document.getElementById('sales-position-select');
             const selectedPosition = salesPositionSelect ? salesPositionSelect.value : '';
 
@@ -1472,7 +1514,37 @@
                     tsStandard.addOption({ value: `${id} - ${name}`, text: `${id} - ${name}`, employeeName: name });
                 });
                 tsStandard.refreshOptions(false);
-            } else if (selectedRole !== 'internal_sales' && selectedRole !== '') {
+            } 
+            else if (selectedRole === 'dse_promotor') {
+                if (!tsDse) return;
+                tsDse.clearOptions();
+                const rows = document.querySelectorAll('#dse-promotor-table tbody tr');
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length < 2) return;
+                    const tableBrand = cells[0].textContent.trim().toUpperCase();
+                    const id = cells[1].textContent.trim();
+                    const brandMatches = (tableBrand === selectedBrand) || (tableBrand === 'IOH' && (selectedBrand === 'IM3' || selectedBrand === '3ID'));
+                    if (brandMatches) { tsDse.addOption({ value: id, text: id }); }
+                });
+                tsDse.refreshOptions(false);
+            }
+            // Logic handling for Dedicated Promotor selection
+            else if (selectedRole === 'dedicated_promotor') {
+                if (!tsDse) return;
+                tsDse.clearOptions();
+                const rows = document.querySelectorAll('#dse-dedicated-promotor-table tbody tr');
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length < 2) return;
+                    const tableBrand = cells[0].textContent.trim().toUpperCase();
+                    const id = cells[1].textContent.trim();
+                    const brandMatches = (tableBrand === selectedBrand) || (tableBrand === 'IOH' && (selectedBrand === 'IM3' || selectedBrand === '3ID'));
+                    if (brandMatches) { tsDse.addOption({ value: id, text: id }); }
+                });
+                tsDse.refreshOptions(false);
+            }
+            else if (selectedRole !== 'internal_sales' && selectedRole !== '') {
                 if (!tsDse) return;
                 tsDse.clearOptions();
                 const rows = document.querySelectorAll('#dse-data-table tbody tr');
@@ -1485,7 +1557,8 @@
                     if (brandMatches) { tsDse.addOption({ value: id, text: id }); }
                 });
                 tsDse.refreshOptions(false);
-            } else if (selectedRole === 'internal_sales') {
+            } 
+            else if (selectedRole === 'internal_sales') {
                 if (!tsStandard) return;
                 tsStandard.clearOptions();
                 const targetPosition = selectedPosition;
