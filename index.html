@@ -271,6 +271,7 @@
             <input type="hidden" id="geo-longitude" name="longitude">
             <input type="hidden" id="checkin-time" name="checkin_time">
             
+            <!-- Question 1: Brand Selection -->
             <div class="form-group">
                 <label>Brand</label>
                 <div class="radio-group-container">
@@ -289,6 +290,7 @@
                 </div>
             </div>
 
+            <!-- Question 2: Sales Status -->
             <div class="form-group" id="sales-status-section" style="display: none;">
                 <label for="sales-status-select">Sales Status</label>
                 <select id="sales-status-select" name="sales_status" class="form-select" onchange="handleSalesStatusChange()">
@@ -298,6 +300,7 @@
                 </select>
             </div>
 
+            <!-- Question 3: Role Category -->
             <div class="form-group" id="role-section" style="display: none;">
                 <label for="role-select">Role Category</label>
                 <select id="role-select" name="role_category" class="form-select" onchange="handleRoleChange()">
@@ -309,6 +312,7 @@
                 </select>
             </div>
 
+            <!-- Question 3b: Sales Position (Only if Internal Sales) -->
             <div class="form-group" id="sales-position-section" style="display: none;">
                 <label for="sales-position-select">Sales Position</label>
                 <select id="sales-position-select" name="sales_position" class="form-select" onchange="handlePositionChange()">
@@ -319,6 +323,7 @@
                 </select>
             </div>
 
+            <!-- Question 4: Search Selection Wrapper -->
             <div class="form-group" id="question-4-section" style="display: none;">
                 <div id="standard-lookup-wrapper">
                     <label for="id-name-select">Search ID or Name</label>
@@ -343,6 +348,17 @@
                 </div>
             </div>
 
+            <!-- NEW Question 5: Activity Type Selection -->
+            <div class="form-group" id="activity-type-section" style="display: none;">
+                <label for="activity-type-select">Activity Type</label>
+                <select id="activity-type-select" name="activity_type" class="form-select" onchange="handleActivityTypeChange()">
+                    <option value="" disabled selected hidden>Select Activity Type...</option>
+                    <option value="checkin">Check-in</option>
+                    <option value="biometric">Biometric</option>
+                </select>
+            </div>
+
+            <!-- Question 6: Location Type -->
             <div class="form-group" id="location-type-section" style="display: none;">
                 <label for="location-type-select">Location Type</label>
                 <select id="location-type-select" name="location_type" class="form-select" onchange="handleLocationTypeChange()">
@@ -355,6 +371,7 @@
                 </select>
             </div>
 
+            <!-- Question 6b: Dynamic Location Detail Input fields -->
             <div class="form-group" id="location-detail-container" style="display: none;">
                 <div id="wrapper-kro" class="location-detail-field" style="display: none;">
                     <label for="input-kro">ID Outlet</label>
@@ -378,29 +395,34 @@
                 </div>
             </div>
 
+            <!-- Additional Details -->
             <div class="form-group" id="wrapper-nama-kegiatan" style="display: none;">
                 <label for="input-nama-kegiatan">Nama Kegiatan</label>
                 <input type="text" id="input-nama-kegiatan" name="nama_kegiatan" class="form-control" placeholder="Masukkan Nama Kegiatan" oninput="this.value = this.value.toUpperCase()">
             </div>
 
+            <!-- MSISDN Block -->
             <div class="form-group" id="msisdn-section" style="display: none;">
                 <label>MSISDN inputs (Max 5)</label>
                 <div id="msisdn-fields-container">
                     <div class="msisdn-row" data-index="1">
                         <span class="msisdn-prefix">MSISDN 1</span>
-                        <input type="text" id="msisdn-input-1" class="form-control" value="62" inputmode="numeric" pattern="[0-9]*" oninput="validateMsisdnInput(this)">
+                        <!-- Added explicit name attributes to prevent layout sync drops -->
+                        <input type="text" id="msisdn-input-1" name="msisdn_1" class="form-control" value="62" inputmode="numeric" pattern="[0-9]*" oninput="validateMsisdnInput(this)">
                     </div>
                 </div>
                 <button type="button" id="btn-add-msisdn" class="btn-secondary" onclick="addMsisdnField()">+ Add Number</button>
                 <span id="msisdn-limit-msg" class="limit-message" style="display: none;">Maximum entry limit is 5 numbers.</span>
             </div>
 
+            <!-- Submit Section -->
             <div id="submit-section" style="display: none;">
                 <button type="submit" id="submit-btn" class="btn-submit">Submit Activity</button>
             </div>
         </form>
     </div>
 
+    <!-- Background Data Tables (Hidden) -->
     <table id="non-sales-table" style="display: none;"><tbody>
         <tr><td>72015056</td><td>ERIC DANARI</td></tr>
 <tr><td>74013503</td><td>RADITYO PRAMUDITO</td></tr>
@@ -1107,483 +1129,547 @@
 
     <table id="dse-dedicated-promotor-table" style="display: none;"><tbody>
     </tbody></table>
+</body>
 
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
-    <script>
-        let tsStandard = null;
-        let tsDse = null;
-        const MAX_MSISDN = 5;
+<script>
+    let tsStandard = null;
+    let tsDse = null;
+    const MAX_MSISDN = 5;
 
-        function validateMsisdnInput(input) {
-            let digits = input.value.replace(/[^0-9]/g, '');
-            if (digits.length < 2 || !digits.startsWith('62')) {
-                if (digits.startsWith('0')) {
-                    digits = '62' + digits.substring(1);
-                } else {
-                    digits = '62';
-                }
+    function validateMsisdnInput(input) {
+        let digits = input.value.replace(/[^0-9]/g, '');
+        if (digits.length < 2 || !digits.startsWith('62')) {
+            if (digits.startsWith('0')) {
+                digits = '62' + digits.substring(1);
+            } else {
+                digits = '62';
             }
-            input.value = digits;
+        }
+        input.value = digits;
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        // --- FIXED JAKARTA TIME AND DAY VALIDATION ---
+        const targetLocaleStr = new Date().toLocaleString("en-US", {timeZone: "Asia/Jakarta"});
+        const jakartaDate = new Date(targetLocaleStr);
+
+        const currentDay = jakartaDate.getDay();   // 0 = Sunday, 3 = Wed, 5 = Fri, 6 = Sat
+        const currentHour = jakartaDate.getHours(); // 0 to 23
+
+        // Rule 1: "DSE Promotor" must only show Wed-Sat, 16:00 to 21:59 WIB
+        const isDsePromotorDay = (currentDay >= 3 && currentDay <= 6); 
+        const isDsePromotorTime = (currentHour >= 16 && currentHour <= 21); 
+
+        if (!isDsePromotorDay || !isDsePromotorTime) {
+            const promotorOption = document.getElementById('opt-dse-promotor');
+            if (promotorOption) { promotorOption.remove(); }
         }
 
-        document.addEventListener("DOMContentLoaded", function() {
-            // --- JAKARTA TIME AND DAY VALIDATION ---
-            const now = new Date();
-            const jakartaString = now.toLocaleString("en-US", { timeZone: "Asia/Jakarta" });
-            const jakartaDate = new Date(jakartaString);
+        // Rule 2: "Non-Sales" must only show Friday, 00:00 to 23:59 WIB
+        const isNonSalesDay = (currentDay === 5); 
 
-            const currentDay = jakartaDate.getDay();   // 0 = Sunday, 5 = Friday, 6 = Saturday
-            const currentHour = jakartaDate.getHours(); // 0 to 23
+        if (!isNonSalesDay) {
+            const nonSalesOption = document.getElementById('opt-non-sales');
+            if (nonSalesOption) { nonSalesOption.remove(); }
+        }
+        // -----------------------------------------------------------
 
-            // Rule 1: "DSE Promotor" must only show Wed-Sat, 16:00 to 21:59 WIB
-            const isDsePromotorDay = (currentDay >= 3 && currentDay <= 6); 
-            const isDsePromotorTime = (currentHour >= 16 && currentHour <= 21); 
+        tsStandard = new TomSelect('#id-name-select', {
+            create: false, valueField: 'value', labelField: 'text', searchField: ['text'],
+            sortField: { field: "employeeName", direction: "asc" },
+            // Triggers the new Activity Type section
+            onChange: function(value) { if(value) { showQuestion5(); } else { hideQuestion5(); } }
+        });
 
-            if (!isDsePromotorDay || !isDsePromotorTime) {
-                const promotorOption = document.getElementById('opt-dse-promotor');
-                if (promotorOption) {
-                    promotorOption.remove(); 
-                }
-            }
+        tsDse = new TomSelect('#dse-id-select', {
+            create: false, valueField: 'value', labelField: 'text', searchField: ['text'],
+            sortField: { field: "value", direction: "asc" },
+            placeholder: "Search ID...",
+            onChange: function(value) { checkDseCompletion(); }
+        });
 
-            // Rule 2: "Non-Sales" must only show Friday, 00:00 to 23:59 WIB
-            const isNonSalesDay = (currentDay === 5); 
+        document.getElementById('dse-name-input').addEventListener('input', function() {
+            checkDseCompletion();
+        });
 
-            if (!isNonSalesDay) {
-                const nonSalesOption = document.getElementById('opt-non-sales');
-                if (nonSalesOption) {
-                    nonSalesOption.remove();
-                }
-            }
-            // -----------------------------------------------------------
+        const form = document.getElementById('activity-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const container = document.getElementById('form-container');
 
-            tsStandard = new TomSelect('#id-name-select', {
-                create: false, valueField: 'value', labelField: 'text', searchField: ['text'],
-                sortField: { field: "employeeName", direction: "asc" },
-                onChange: function(value) { if(value) { showQuestion6(); } else { hideQuestion6(); } }
-            });
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); 
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Locating...";
 
-            tsDse = new TomSelect('#dse-id-select', {
-                create: false, valueField: 'value', labelField: 'text', searchField: ['text'],
-                sortField: { field: "value", direction: "asc" },
-                placeholder: "Search ID...",
-                onChange: function(value) { checkDseCompletion(); }
-            });
-
-            document.getElementById('dse-name-input').addEventListener('input', function() {
-                checkDseCompletion();
-            });
-
-            const form = document.getElementById('activity-form');
-            const submitBtn = document.getElementById('submit-btn');
-            const container = document.getElementById('form-container');
-
-            form.addEventListener('submit', function(event) {
-                event.preventDefault(); 
-                submitBtn.disabled = true;
-                submitBtn.textContent = "Locating...";
-
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        function(position) {
-                            document.getElementById('geo-latitude').value = position.coords.latitude;
-                            document.getElementById('geo-longitude').value = position.coords.longitude;
-                            document.getElementById('checkin-time').value = new Date().toISOString();
-                            sendDataToGoogleSheets();
-                        }, 
-                        function(error) {
-                            alert("Location access denied or timed out. Submitting without coordinates.");
-                            document.getElementById('checkin-time').value = new Date().toISOString();
-                            sendDataToGoogleSheets();
-                        },
-                        { enableHighAccuracy: true, timeout: 6000 }
-                    );
-                } else {
-                    document.getElementById('checkin-time').value = new Date().toISOString();
-                    sendDataToGoogleSheets();
-                }
-            });
-
-            function sendDataToGoogleSheets() {
-                submitBtn.textContent = "Submitting Data...";
-                const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz6qDR7c7JBhw_UUsZl7vdG3g0pVh_VRB5u9PNaaG2u8nyi4p3NM_B6UnQ9WH5hWABq/exec";
-                const formData = new FormData(form);
-                const formObject = {};
-                
-                formData.forEach((value, key) => { formObject[key] = value; });
-
-                const locType = document.getElementById('location-type-select').value;
-                let locDetail = "";
-                if(locType === 'kro') locDetail = document.getElementById('input-kro').value;
-                if(locType === 'kampus') locDetail = document.getElementById('input-kampus').value;
-                if(locType === 'residential') locDetail = document.getElementById('input-residential').value;
-                if(locType === 'pasar') locDetail = document.getElementById('input-pasar').value;
-                if(locType === 'others') locDetail = document.getElementById('input-others').value;
-                formObject['location_detail'] = locDetail;
-
-                for (let i = 1; i <= 5; i++) {
-                    const inputEl = document.getElementById(`msisdn-input-${i}`);
-                    formObject[`msisdn${i}`] = inputEl ? inputEl.value.trim() : "";
-                }
-
-                fetch(WEB_APP_URL, {
-                    method: 'POST',
-                    mode: 'no-cors', 
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formObject)
-                })
-                .then(() => { showThankYouScreen(); })
-                .catch(error => {
-                    console.error('Submission Error:', error);
-                    alert("Submission failed. Check network connection.");
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = "Submit Activity";
-                });
-            }
-
-            function showThankYouScreen() {
-                container.innerHTML = `
-                    <div class="thank-you-card">
-                        <div class="thank-you-icon">✓</div>
-                        <h3>Thank you for submitting this form</h3>
-                        <p>Your biometric activity log has been recorded successfully.</p>
-                    </div>
-                `;
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        document.getElementById('geo-latitude').value = position.coords.latitude;
+                        document.getElementById('geo-longitude').value = position.coords.longitude;
+                        document.getElementById('checkin-time').value = new Date().toISOString();
+                        sendDataToGoogleSheets();
+                    }, 
+                    function(error) {
+                        alert("Location access denied or timed out. Submitting without coordinates.");
+                        document.getElementById('checkin-time').value = new Date().toISOString();
+                        sendDataToGoogleSheets();
+                    },
+                    { enableHighAccuracy: true, timeout: 6000 }
+                );
+            } else {
+                document.getElementById('checkin-time').value = new Date().toISOString();
+                sendDataToGoogleSheets();
             }
         });
 
-        function handleBrandChange() {
-            const selectedBrandRadio = document.querySelector('input[name="brand"]:checked');
-            if (selectedBrandRadio) { document.documentElement.setAttribute('data-brand', selectedBrandRadio.value); }
-            document.getElementById('sales-status-select').value = '';
-            const roleSelect = document.getElementById('role-select');
-            roleSelect.value = '';
-            roleSelect.removeAttribute('required');
-            document.getElementById('role-section').style.display = 'none';
-            const salesPositionSelect = document.getElementById('sales-position-select');
-            salesPositionSelect.value = '';
-            document.getElementById('sales-position-section').style.display = 'none';
-            salesPositionSelect.removeAttribute('required');
-            hideQuestion4();
-            document.getElementById('sales-status-section').style.display = 'block';
-            document.getElementById('sales-status-select').setAttribute('required', 'true');
+        function sendDataToGoogleSheets() {
+            submitBtn.textContent = "Submitting Data...";
+            const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxMoua3RKFEZmirqHxrkgGbABkvK8NiL09m2ovOdEm4S-XAjd4KlDFochE3wJFHeYzp/exec";
+            const formData = new FormData(form);
+            const formObject = {};
+            
+            formData.forEach((value, key) => { formObject[key] = value; });
+
+            const locType = document.getElementById('location-type-select').value;
+            let locDetail = "";
+            if(locType === 'kro') locDetail = document.getElementById('input-kro').value;
+            if(locType === 'kampus') locDetail = document.getElementById('input-kampus').value;
+            if(locType === 'residential') locDetail = document.getElementById('input-residential').value;
+            if(locType === 'pasar') locDetail = document.getElementById('input-pasar').value;
+            if(locType === 'others') locDetail = document.getElementById('input-others').value;
+            formObject['location_detail'] = locDetail;
+
+            for (let i = 1; i <= 5; i++) {
+                const inputEl = document.getElementById(`msisdn-input-${i}`);
+                formObject[`msisdn${i}`] = inputEl ? inputEl.value.trim() : "";
+            }
+
+            fetch(WEB_APP_URL, {
+                method: 'POST',
+                mode: 'no-cors', 
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formObject)
+            })
+            .then(() => { showThankYouScreen(); })
+            .catch(error => {
+                console.error('Submission Error:', error);
+                alert("Submission failed. Check network connection.");
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Submit Activity";
+            });
         }
 
-        function handleSalesStatusChange() {
-            const statusSelect = document.getElementById('sales-status-select');
-            const roleSection = document.getElementById('role-section');
-            const roleSelect = document.getElementById('role-select');
-            const salesPositionSection = document.getElementById('sales-position-section');
-            const salesPositionSelect = document.getElementById('sales-position-select');
-            
-            roleSelect.value = '';
-            salesPositionSelect.value = '';
+        function showThankYouScreen() {
+            container.innerHTML = `
+                <div class="thank-you-card">
+                    <div class="thank-you-icon">✓</div>
+                    <h3>Thank you for submitting this form</h3>
+                    <p>Your biometric activity log has been recorded successfully.</p>
+                </div>
+            `;
+        }
+    });
+
+    function handleBrandChange() {
+        const selectedBrandRadio = document.querySelector('input[name="brand"]:checked');
+        if (selectedBrandRadio) { document.documentElement.setAttribute('data-brand', selectedBrandRadio.value); }
+        document.getElementById('sales-status-select').value = '';
+        const roleSelect = document.getElementById('role-select');
+        roleSelect.value = '';
+        roleSelect.removeAttribute('required');
+        document.getElementById('role-section').style.display = 'none';
+        const salesPositionSelect = document.getElementById('sales-position-select');
+        salesPositionSelect.value = '';
+        document.getElementById('sales-position-section').style.display = 'none';
+        salesPositionSelect.removeAttribute('required');
+        hideQuestion4();
+        document.getElementById('sales-status-section').style.display = 'block';
+        document.getElementById('sales-status-select').setAttribute('required', 'true');
+    }
+
+    function handleSalesStatusChange() {
+        const statusSelect = document.getElementById('sales-status-select');
+        const roleSection = document.getElementById('role-section');
+        const roleSelect = document.getElementById('role-select');
+        const salesPositionSection = document.getElementById('sales-position-section');
+        const salesPositionSelect = document.getElementById('sales-position-select');
+        
+        roleSelect.value = '';
+        salesPositionSelect.value = '';
+        salesPositionSection.style.display = 'none';
+        salesPositionSelect.removeAttribute('required');
+        hideQuestion4();
+
+        if (statusSelect.value === 'sales') {
+            roleSection.style.display = 'block';
+            roleSelect.setAttribute('required', 'true');
+        } else if (statusSelect.value === 'non_sales') {
+            roleSection.style.display = 'none';
+            roleSelect.removeAttribute('required');
+            showQuestion4();
+        }
+    }
+
+    function handleRoleChange() {
+        const roleSelect = document.getElementById('role-select');
+        const salesPositionSection = document.getElementById('sales-position-section');
+        const salesPositionSelect = document.getElementById('sales-position-select');
+        
+        salesPositionSelect.value = '';
+        hideQuestion4();
+
+        const optKro = document.getElementById('loc-kro');
+        const optKampus = document.getElementById('loc-kampus');
+        const optResidential = document.getElementById('loc-residential');
+        const optPasar = document.getElementById('loc-pasar');
+        const optOthers = document.getElementById('loc-others');
+
+        if (roleSelect.value === 'dse_promotor') {
+            if (optKampus) optKampus.style.display = 'none';
+            if (optResidential) optResidential.style.display = 'none';
+            if (optPasar) optPasar.style.display = 'none';
+            if (optOthers) optOthers.style.display = 'none';
+        } else {
+            if (optKampus) optKampus.style.display = 'block';
+            if (optResidential) optResidential.style.display = 'block';
+            if (optPasar) optPasar.style.display = 'block';
+            if (optOthers) optOthers.style.display = 'block';
+        }
+        
+        if (roleSelect.value === 'internal_sales') {
+            salesPositionSection.style.display = 'block';
+            salesPositionSelect.setAttribute('required', 'true');
+        } else if (roleSelect.value !== "") {
             salesPositionSection.style.display = 'none';
             salesPositionSelect.removeAttribute('required');
-            hideQuestion4();
-
-            if (statusSelect.value === 'sales') {
-                roleSection.style.display = 'block';
-                roleSelect.setAttribute('required', 'true');
-            } else if (statusSelect.value === 'non_sales') {
-                roleSection.style.display = 'none';
-                roleSelect.removeAttribute('required');
-                showQuestion4();
-            }
+            showQuestion4();
         }
+    }
 
-        function handleRoleChange() {
-            const roleSelect = document.getElementById('role-select');
-            const salesPositionSection = document.getElementById('sales-position-section');
-            const salesPositionSelect = document.getElementById('sales-position-select');
-            
-            salesPositionSelect.value = '';
-            hideQuestion4();
+    function handlePositionChange() {
+        const salesPositionSelect = document.getElementById('sales-position-select');
+        hideQuestion4();
+        if (salesPositionSelect.value !== "") { showQuestion4(); }
+    }
 
-            const optKro = document.getElementById('loc-kro');
-            const optKampus = document.getElementById('loc-kampus');
-            const optResidential = document.getElementById('loc-residential');
-            const optPasar = document.getElementById('loc-pasar');
-            const optOthers = document.getElementById('loc-others');
+    function showQuestion4() {
+        const statusSelect = document.getElementById('sales-status-select').value;
+        const roleSelect = document.getElementById('role-select').value;
+        document.getElementById('question-4-section').style.display = 'block';
 
-            if (roleSelect.value === 'dse_promotor') {
-                if (optKampus) optKampus.style.display = 'none';
-                if (optResidential) optResidential.style.display = 'none';
-                if (optPasar) optPasar.style.display = 'none';
-                if (optOthers) optOthers.style.display = 'none';
-            } else {
-                if (optKampus) optKampus.style.display = 'block';
-                if (optResidential) optResidential.style.display = 'block';
-                if (optPasar) optPasar.style.display = 'block';
-                if (optOthers) optOthers.style.display = 'block';
-            }
-            
-            if (roleSelect.value === 'internal_sales') {
-                salesPositionSection.style.display = 'block';
-                salesPositionSelect.setAttribute('required', 'true');
-            } else if (roleSelect.value !== "") {
-                salesPositionSection.style.display = 'none';
-                salesPositionSelect.removeAttribute('required');
-                showQuestion4();
-            }
-        }
-
-        function handlePositionChange() {
-            const salesPositionSelect = document.getElementById('sales-position-select');
-            hideQuestion4();
-            if (salesPositionSelect.value !== "") { showQuestion4(); }
-        }
-
-        function showQuestion4() {
-            const statusSelect = document.getElementById('sales-status-select').value;
-            const roleSelect = document.getElementById('role-select').value;
-            document.getElementById('question-4-section').style.display = 'block';
-
-            if (statusSelect === 'non_sales' || roleSelect === 'internal_sales') {
-                document.getElementById('standard-lookup-wrapper').style.display = 'block';
-                document.getElementById('dse-lookup-wrapper').style.display = 'none';
-                document.getElementById('dse-name-input').removeAttribute('required');
-                document.getElementById('dse-name-input').value = '';
-            } else {
-                document.getElementById('standard-lookup-wrapper').style.display = 'none';
-                document.getElementById('dse-lookup-wrapper').style.display = 'block';
-                document.getElementById('dse-name-input').setAttribute('required', 'true');
-            }
-            loadTableData();
-        }
-
-        function hideQuestion4() {
-            document.getElementById('question-4-section').style.display = 'none';
-            hideQuestion6();
-            if(tsStandard) { tsStandard.clear(); tsStandard.clearOptions(); }
-            if(tsDse) { tsDse.clear(); tsDse.clearOptions(); }
+        if (statusSelect === 'non_sales' || roleSelect === 'internal_sales') {
+            document.getElementById('standard-lookup-wrapper').style.display = 'block';
+            document.getElementById('dse-lookup-wrapper').style.display = 'none';
+            document.getElementById('dse-name-input').removeAttribute('required');
             document.getElementById('dse-name-input').value = '';
+        } else {
+            document.getElementById('standard-lookup-wrapper').style.display = 'none';
+            document.getElementById('dse-lookup-wrapper').style.display = 'block';
+            document.getElementById('dse-name-input').setAttribute('required', 'true');
+        }
+        loadTableData();
+    }
+
+    function hideQuestion4() {
+        document.getElementById('question-4-section').style.display = 'none';
+        hideQuestion5(); // Collapse subsequent chain steps
+        if(tsStandard) { tsStandard.clear(); tsStandard.clearOptions(); }
+        if(tsDse) { tsDse.clear(); tsDse.clearOptions(); }
+        document.getElementById('dse-name-input').value = '';
+    }
+
+    function checkDseCompletion() {
+        const dseId = document.getElementById('dse-id-select').value;
+        const dseName = document.getElementById('dse-name-input').value.trim();
+        if(dseId && dseName) { showQuestion5(); } else { hideQuestion5(); }
+    }
+
+    // --- UPDATED CONTROLLERS FOR QUESTION 5 (ACTIVITY TYPE) ---
+    function showQuestion5() {
+        document.getElementById('activity-type-section').style.display = 'block';
+        document.getElementById('activity-type-select').setAttribute('required', 'true');
+    }
+
+    function hideQuestion5() {
+        const actSelect = document.getElementById('activity-type-select');
+        actSelect.removeAttribute('required');
+        actSelect.value = '';
+        document.getElementById('activity-type-section').style.display = 'none';
+        hideQuestion6(); 
+        document.getElementById('submit-section').style.display = 'none';
+    }
+
+    function handleActivityTypeChange() {
+        const actSelect = document.getElementById('activity-type-select');
+        
+        // Reset subsequent sections first to keep state clean
+        hideQuestion6();
+        document.getElementById('submit-section').style.display = 'none';
+
+        if (actSelect.value === 'checkin') {
+            // Check-in Route: Bypass details and display the submit button directly
+            document.getElementById('submit-section').style.display = 'block';
+        } else if (actSelect.value === 'biometric') {
+            // Biometric Route: Request location configuration steps next
+            showQuestion6();
+        }
+    }
+
+    // --- LOCATION ROUTING CONTROLLERS ---
+    function showQuestion6() {
+        document.getElementById('location-type-section').style.display = 'block';
+        document.getElementById('location-type-select').setAttribute('required', 'true');
+    }
+
+    function hideQuestion6() {
+        document.getElementById('location-type-section').style.display = 'none';
+        document.getElementById('location-type-select').removeAttribute('required');
+        document.getElementById('location-type-select').value = '';
+        document.getElementById('location-detail-container').style.display = 'none';
+        
+        const namaKegiatanWrapper = document.getElementById('wrapper-nama-kegiatan');
+        namaKegiatanWrapper.style.display = 'none';
+        const namaKegiatanInput = document.getElementById('input-nama-kegiatan');
+        namaKegiatanInput.removeAttribute('required');
+        namaKegiatanInput.value = '';
+
+        document.getElementById('msisdn-section').style.display = 'none';
+        const baseInput = document.getElementById('msisdn-input-1');
+        if (baseInput) { 
+            baseInput.removeAttribute('required'); 
+            baseInput.value = '62'; 
+        }
+        
+        const rows = document.querySelectorAll('#msisdn-fields-container .msisdn-row');
+        rows.forEach(row => { if (row.getAttribute('data-index') !== "1") row.remove(); });
+        updateMsisdnButtonState();
+        
+        const detailFields = document.querySelectorAll('.location-detail-field');
+        detailFields.forEach(field => {
+            field.style.display = 'none';
+            const input = field.querySelector('input');
+            input.removeAttribute('required');
+            input.value = '';
+        });
+    }
+
+    // --- LOCATION ROUTING CONTROLLERS ---
+    function showQuestion6() {
+        document.getElementById('location-type-section').style.display = 'block';
+        document.getElementById('location-type-select').setAttribute('required', 'true');
+    }
+
+    function hideQuestion6() {
+        document.getElementById('location-type-section').style.display = 'none';
+        document.getElementById('location-type-select').removeAttribute('required');
+        document.getElementById('location-type-select').value = '';
+        document.getElementById('location-detail-container').style.display = 'none';
+        
+        const namaKegiatanWrapper = document.getElementById('wrapper-nama-kegiatan');
+        namaKegiatanWrapper.style.display = 'none';
+        const namaKegiatanInput = document.getElementById('input-nama-kegiatan');
+        namaKegiatanInput.removeAttribute('required');
+        namaKegiatanInput.value = '';
+
+        document.getElementById('msisdn-section').style.display = 'none';
+        const baseInput = document.getElementById('msisdn-input-1');
+        if (baseInput) { 
+            baseInput.removeAttribute('required'); 
+            baseInput.value = '62'; 
+        }
+        
+        const rows = document.querySelectorAll('#msisdn-fields-container .msisdn-row');
+        rows.forEach(row => { if (row.getAttribute('data-index') !== "1") row.remove(); });
+        updateMsisdnButtonState();
+
+        document.getElementById('submit-section').style.display = 'none';
+        
+        const detailFields = document.querySelectorAll('.location-detail-field');
+        detailFields.forEach(field => {
+            field.style.display = 'none';
+            const input = field.querySelector('input');
+            input.removeAttribute('required');
+            input.value = '';
+        });
+    }
+
+    function handleLocationTypeChange() {
+        const selectValue = document.getElementById('location-type-select').value;
+        const detailContainer = document.getElementById('location-detail-container');
+        const namaKegiatanWrapper = document.getElementById('wrapper-nama-kegiatan');
+        const namaKegiatanInput = document.getElementById('input-nama-kegiatan');
+        const msisdnSection = document.getElementById('msisdn-section');
+        const firstMsisdnInput = document.getElementById('msisdn-input-1');
+        const submitSection = document.getElementById('submit-section');
+        
+        if (selectValue) {
+            detailContainer.style.display = 'block';
+            msisdnSection.style.display = 'block';
+            if (firstMsisdnInput) firstMsisdnInput.setAttribute('required', 'true');
+            submitSection.style.display = 'block';
         }
 
-        function checkDseCompletion() {
-            const dseId = document.getElementById('dse-id-select').value;
-            const dseName = document.getElementById('dse-name-input').value.trim();
-            if(dseId && dseName) { showQuestion6(); } else { hideQuestion6(); }
+        const detailFields = document.querySelectorAll('.location-detail-field');
+        detailFields.forEach(field => {
+            field.style.display = 'none';
+            field.querySelector('input').removeAttribute('required');
+        });
+
+        const activeWrapper = document.getElementById(`wrapper-${selectValue}`);
+        if (activeWrapper) {
+            activeWrapper.style.display = 'block';
+            activeWrapper.querySelector('input').setAttribute('required', 'true');
         }
 
-        // Location Type question section controllers
-        function showQuestion6() {
-            document.getElementById('location-type-section').style.display = 'block';
-            document.getElementById('location-type-select').setAttribute('required', 'true');
-        }
-
-        function hideQuestion6() {
-            document.getElementById('location-type-section').style.display = 'none';
-            document.getElementById('location-type-select').removeAttribute('required');
-            document.getElementById('location-type-select').value = '';
-            document.getElementById('location-detail-container').style.display = 'none';
-            
-            const namaKegiatanWrapper = document.getElementById('wrapper-nama-kegiatan');
+        if (selectValue && selectValue !== 'kro') {
+            namaKegiatanWrapper.style.display = 'block';
+            namaKegiatanInput.setAttribute('required', 'true');
+        } else {
             namaKegiatanWrapper.style.display = 'none';
-            const namaKegiatanInput = document.getElementById('input-nama-kegiatan');
             namaKegiatanInput.removeAttribute('required');
             namaKegiatanInput.value = '';
+        }
+    }
 
-            document.getElementById('msisdn-section').style.display = 'none';
-            const baseInput = document.getElementById('msisdn-input-1');
-            if (baseInput) { 
-                baseInput.removeAttribute('required'); 
-                baseInput.value = '62'; 
+    function addMsisdnField() {
+        const container = document.getElementById('msisdn-fields-container');
+        const currentRows = container.getElementsByClassName('msisdn-row');
+        const currentIndices = Array.from(currentRows).map(row => parseInt(row.getAttribute('data-index')));
+        let nextIndex = 1;
+        for (let i = 1; i <= 5; i++) {
+            if (!currentIndices.includes(i)) {
+                nextIndex = i;
+                break;
             }
-            
-            const rows = document.querySelectorAll('#msisdn-fields-container .msisdn-row');
-            rows.forEach(row => { if (row.getAttribute('data-index') !== "1") row.remove(); });
+        }
+
+        if (currentRows.length < MAX_MSISDN) {
+            const rowDiv = document.createElement('div');
+            rowDiv.className = 'msisdn-row';
+            rowDiv.setAttribute('data-index', nextIndex);
+            rowDiv.innerHTML = `
+                <span class="msisdn-prefix">MSISDN ${nextIndex}</span>
+                <input type="text" id="msisdn-input-${nextIndex}" name="msisdn_${nextIndex}" class="form-control" value="62" inputmode="numeric" pattern="[0-9]*" oninput="validateMsisdnInput(this)" required>
+                <button type="button" class="btn-remove" onclick="removeMsisdnField(this)">✕</button>
+            `;
+            container.appendChild(rowDiv);
             updateMsisdnButtonState();
-
-            document.getElementById('submit-section').style.display = 'none';
-            
-            const detailFields = document.querySelectorAll('.location-detail-field');
-            detailFields.forEach(field => {
-                field.style.display = 'none';
-                const input = field.querySelector('input');
-                input.removeAttribute('required');
-                input.value = '';
-            });
         }
+    }
 
-        function handleLocationTypeChange() {
-            const selectValue = document.getElementById('location-type-select').value;
-            const detailContainer = document.getElementById('location-detail-container');
-            const namaKegiatanWrapper = document.getElementById('wrapper-nama-kegiatan');
-            const namaKegiatanInput = document.getElementById('input-nama-kegiatan');
-            const msisdnSection = document.getElementById('msisdn-section');
-            const firstMsisdnInput = document.getElementById('msisdn-input-1');
-            const submitSection = document.getElementById('submit-section');
-            
-            if (selectValue) {
-                detailContainer.style.display = 'block';
-                msisdnSection.style.display = 'block';
-                if (firstMsisdnInput) firstMsisdnInput.setAttribute('required', 'true');
-                submitSection.style.display = 'block';
-            }
+    function removeMsisdnField(button) {
+        button.parentElement.remove();
+        updateMsisdnButtonState();
+    }
 
-            const detailFields = document.querySelectorAll('.location-detail-field');
-            detailFields.forEach(field => {
-                field.style.display = 'none';
-                field.querySelector('input').removeAttribute('required');
-            });
+    function updateMsisdnButtonState() {
+        const container = document.getElementById('msisdn-fields-container');
+        const currentFieldsCount = container.getElementsByClassName('msisdn-row').length;
+        const addButton = document.getElementById('btn-add-msisdn');
+        const limitMsg = document.getElementById('msisdn-limit-msg');
 
-            const activeWrapper = document.getElementById(`wrapper-${selectValue}`);
-            if (activeWrapper) {
-                activeWrapper.style.display = 'block';
-                activeWrapper.querySelector('input').setAttribute('required', 'true');
-            }
-
-            if (selectValue && selectValue !== 'kro') {
-                namaKegiatanWrapper.style.display = 'block';
-                namaKegiatanInput.setAttribute('required', 'true');
-            } else {
-                namaKegiatanWrapper.style.display = 'none';
-                namaKegiatanInput.removeAttribute('required');
-                namaKegiatanInput.value = '';
-            }
+        if (currentFieldsCount >= MAX_MSISDN) {
+            addButton.style.display = 'none';
+            limitMsg.style.display = 'block';
+        } else {
+            addButton.style.display = 'inline-block';
+            limitMsg.style.display = 'none';
         }
+    }
 
-        function addMsisdnField() {
-            const container = document.getElementById('msisdn-fields-container');
-            const currentRows = container.getElementsByClassName('msisdn-row');
-            const currentIndices = Array.from(currentRows).map(row => parseInt(row.getAttribute('data-index')));
-            let nextIndex = 1;
-            for (let i = 1; i <= 5; i++) {
-                if (!currentIndices.includes(i)) {
-                    nextIndex = i;
-                    break;
+    function loadTableData() {
+        const selectedBrandRadio = document.querySelector('input[name="brand"]:checked');
+        const statusSelect = document.getElementById('sales-status-select');
+        
+        if (!selectedBrandRadio || !statusSelect) return;
+        const selectedBrand = selectedBrandRadio.value.toUpperCase(); 
+        const selectedStatus = statusSelect.value;
+        const roleSelect = document.getElementById('role-select');
+        const selectedRole = roleSelect ? roleSelect.value : '';
+        const salesPositionSelect = document.getElementById('sales-position-select');
+        const selectedPosition = salesPositionSelect ? salesPositionSelect.value : '';
+
+        if (selectedStatus === 'non_sales') {
+            if (!tsStandard) return;
+            tsStandard.clearOptions();
+            const rows = document.querySelectorAll('#non-sales-table tbody tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length < 2) return;
+                const id = cells[0].textContent.trim();
+                const name = cells[1].textContent.trim();
+                tsStandard.addOption({ value: `${id} - ${name}`, text: `${id} - ${name}`, employeeName: name });
+            });
+            tsStandard.refreshOptions(false);
+        } 
+        else if (selectedRole === 'dse_promotor') {
+            if (!tsDse) return;
+            tsDse.clearOptions();
+            const rows = document.querySelectorAll('#dse-promotor-table tbody tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length < 2) return;
+                const tableBrand = cells[0].textContent.trim().toUpperCase();
+                const id = cells[1].textContent.trim();
+                const brandMatches = (tableBrand === selectedBrand) || (tableBrand === 'IOH' && (selectedBrand === 'IM3' || selectedBrand === '3ID'));
+                if (brandMatches) { tsDse.addOption({ value: id, text: id }); }
+            });
+            tsDse.refreshOptions(false);
+        }
+        else if (selectedRole === 'dedicated_promotor') {
+            if (!tsDse) return;
+            tsDse.clearOptions();
+            const rows = document.querySelectorAll('#dse-dedicated-promotor-table tbody tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length < 2) return;
+                const tableBrand = cells[0].textContent.trim().toUpperCase();
+                const id = cells[1].textContent.trim();
+                const brandMatches = (tableBrand === selectedBrand) || (tableBrand === 'IOH' && (selectedBrand === 'IM3' || selectedBrand === '3ID'));
+                if (brandMatches) { tsDse.addOption({ value: id, text: id }); }
+            });
+            tsDse.refreshOptions(false);
+        }
+        else if (selectedRole !== 'internal_sales' && selectedRole !== '') {
+            if (!tsDse) return;
+            tsDse.clearOptions();
+            const rows = document.querySelectorAll('#dse-data-table tbody tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length < 2) return;
+                const tableBrand = cells[0].textContent.trim().toUpperCase();
+                const id = cells[1].textContent.trim();
+                const brandMatches = (tableBrand === selectedBrand) || (tableBrand === 'IOH' && (selectedBrand === 'IM3' || selectedBrand === '3ID'));
+                if (brandMatches) { tsDse.addOption({ value: id, text: id }); }
+            });
+            tsDse.refreshOptions(false);
+        } 
+        else if (selectedRole === 'internal_sales') {
+            if (!tsStandard) return;
+            tsStandard.clearOptions();
+            const targetPosition = selectedPosition;
+            const rows = document.querySelectorAll('#employee-data-table tbody tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length < 4) return;
+                const tableBrand = cells[0].textContent.trim().toUpperCase();
+                const tablePosition = cells[1].textContent.trim().toLowerCase();
+                const id = cells[2].textContent.trim();
+                const name = cells[3].textContent.trim();
+                const brandMatches = (tableBrand === selectedBrand) || (tableBrand === 'IOH' && (selectedBrand === 'IM3' || selectedBrand === '3ID'));
+                let positionMatches = false;
+                if (targetPosition === 'cse_rse') {
+                    positionMatches = (tablePosition === 'cse' || tablePosition === 'rse' || tablePosition === 'cse_rse');
+                } else {
+                    positionMatches = (tablePosition === targetPosition.toLowerCase());
                 }
-            }
-
-            if (currentRows.length < MAX_MSISDN) {
-                const rowDiv = document.createElement('div');
-                rowDiv.className = 'msisdn-row';
-                rowDiv.setAttribute('data-index', nextIndex);
-                rowDiv.innerHTML = `
-                    <span class="msisdn-prefix">MSISDN ${nextIndex}</span>
-                    <input type="text" id="msisdn-input-${nextIndex}" class="form-control" value="62" inputmode="numeric" pattern="[0-9]*" oninput="validateMsisdnInput(this)" required>
-                    <button type="button" class="btn-remove" onclick="removeMsisdnField(this)">✕</button>
-                `;
-                container.appendChild(rowDiv);
-                updateMsisdnButtonState();
-            }
-        }
-
-        function removeMsisdnField(button) {
-            button.parentElement.remove();
-            updateMsisdnButtonState();
-        }
-
-        function updateMsisdnButtonState() {
-            const container = document.getElementById('msisdn-fields-container');
-            const currentFieldsCount = container.getElementsByClassName('msisdn-row').length;
-            const addButton = document.getElementById('btn-add-msisdn');
-            const limitMsg = document.getElementById('msisdn-limit-msg');
-
-            if (currentFieldsCount >= MAX_MSISDN) {
-                addButton.style.display = 'none';
-                limitMsg.style.display = 'block';
-            } else {
-                addButton.style.display = 'inline-block';
-                limitMsg.style.display = 'none';
-            }
-        }
-
-        function loadTableData() {
-            const selectedBrandRadio = document.querySelector('input[name="brand"]:checked');
-            const statusSelect = document.getElementById('sales-status-select');
-            
-            if (!selectedBrandRadio || !statusSelect) return;
-            const selectedBrand = selectedBrandRadio.value.toUpperCase(); 
-            const selectedStatus = statusSelect.value;
-            const roleSelect = document.getElementById('role-select');
-            const selectedRole = roleSelect ? roleSelect.value : '';
-            const salesPositionSelect = document.getElementById('sales-position-select');
-            const selectedPosition = salesPositionSelect ? salesPositionSelect.value : '';
-
-            if (selectedStatus === 'non_sales') {
-                if (!tsStandard) return;
-                tsStandard.clearOptions();
-                const rows = document.querySelectorAll('#non-sales-table tbody tr');
-                rows.forEach(row => {
-                    const cells = row.querySelectorAll('td');
-                    if (cells.length < 2) return;
-                    const id = cells[0].textContent.trim();
-                    const name = cells[1].textContent.trim();
+                if (brandMatches && positionMatches) {
                     tsStandard.addOption({ value: `${id} - ${name}`, text: `${id} - ${name}`, employeeName: name });
-                });
-                tsStandard.refreshOptions(false);
-            } 
-            else if (selectedRole === 'dse_promotor') {
-                if (!tsDse) return;
-                tsDse.clearOptions();
-                const rows = document.querySelectorAll('#dse-promotor-table tbody tr');
-                rows.forEach(row => {
-                    const cells = row.querySelectorAll('td');
-                    if (cells.length < 2) return;
-                    const tableBrand = cells[0].textContent.trim().toUpperCase();
-                    const id = cells[1].textContent.trim();
-                    const brandMatches = (tableBrand === selectedBrand) || (tableBrand === 'IOH' && (selectedBrand === 'IM3' || selectedBrand === '3ID'));
-                    if (brandMatches) { tsDse.addOption({ value: id, text: id }); }
-                });
-                tsDse.refreshOptions(false);
-            }
-            // Logic handling for Dedicated Promotor selection
-            else if (selectedRole === 'dedicated_promotor') {
-                if (!tsDse) return;
-                tsDse.clearOptions();
-                const rows = document.querySelectorAll('#dse-dedicated-promotor-table tbody tr');
-                rows.forEach(row => {
-                    const cells = row.querySelectorAll('td');
-                    if (cells.length < 2) return;
-                    const tableBrand = cells[0].textContent.trim().toUpperCase();
-                    const id = cells[1].textContent.trim();
-                    const brandMatches = (tableBrand === selectedBrand) || (tableBrand === 'IOH' && (selectedBrand === 'IM3' || selectedBrand === '3ID'));
-                    if (brandMatches) { tsDse.addOption({ value: id, text: id }); }
-                });
-                tsDse.refreshOptions(false);
-            }
-            else if (selectedRole !== 'internal_sales' && selectedRole !== '') {
-                if (!tsDse) return;
-                tsDse.clearOptions();
-                const rows = document.querySelectorAll('#dse-data-table tbody tr');
-                rows.forEach(row => {
-                    const cells = row.querySelectorAll('td');
-                    if (cells.length < 2) return;
-                    const tableBrand = cells[0].textContent.trim().toUpperCase();
-                    const id = cells[1].textContent.trim();
-                    const brandMatches = (tableBrand === selectedBrand) || (tableBrand === 'IOH' && (selectedBrand === 'IM3' || selectedBrand === '3ID'));
-                    if (brandMatches) { tsDse.addOption({ value: id, text: id }); }
-                });
-                tsDse.refreshOptions(false);
-            } 
-            else if (selectedRole === 'internal_sales') {
-                if (!tsStandard) return;
-                tsStandard.clearOptions();
-                const targetPosition = selectedPosition;
-                const rows = document.querySelectorAll('#employee-data-table tbody tr');
-                rows.forEach(row => {
-                    const cells = row.querySelectorAll('td');
-                    if (cells.length < 4) return;
-                    const tableBrand = cells[0].textContent.trim().toUpperCase();
-                    const tablePosition = cells[1].textContent.trim().toLowerCase();
-                    const id = cells[2].textContent.trim();
-                    const name = cells[3].textContent.trim();
-                    const brandMatches = (tableBrand === selectedBrand) || (tableBrand === 'IOH' && (selectedBrand === 'IM3' || selectedBrand === '3ID'));
-                    let positionMatches = false;
-                    if (targetPosition === 'cse_rse') {
-                        positionMatches = (tablePosition === 'cse' || tablePosition === 'rse' || tablePosition === 'cse_rse');
-                    } else {
-                        positionMatches = (tablePosition === targetPosition.toLowerCase());
-                    }
-                    if (brandMatches && positionMatches) {
-                        tsStandard.addOption({ value: `${id} - ${name}`, text: `${id} - ${name}`, employeeName: name });
-                    }
-                });
-                tsStandard.refreshOptions(false);
-            }
+                }
+            });
+            tsStandard.refreshOptions(false);
         }
-    </script>
-</body>
+    }
+</script>
 </html>
