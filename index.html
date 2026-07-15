@@ -1167,15 +1167,15 @@
             const currentDay = jakartaDate.getDay();   
             const currentHour = jakartaDate.getHours(); 
 
-            if (!(currentDay >= 3 && currentDay <= 6 && currentHour >= 16 && currentHour <= 21)) {
+            if (!(currentDay >= 3 && currentDay <= 6 && currentHour >= 1 && currentHour <= 23)) {
                 const promotorOption = document.getElementById('opt-dse-promotor');
                 if (promotorOption) { promotorOption.remove(); }
             }
-            if (currentDay !== 5) {
+            if ((currentDay !== 7)) {
                 const nonSalesOption = document.getElementById('opt-non-sales');
                 if (nonSalesOption) { nonSalesOption.remove(); }
             }
-            if (!(currentHour >= 13 && currentHour <= 21)) {
+            if (!(currentHour >= 1 && currentHour <= 23)) {
                 const dedicatedOption = document.getElementById('opt-dedicated-promotor');
                 if (dedicatedOption) { dedicatedOption.remove(); }
             }
