@@ -308,7 +308,7 @@
                     <option value="internal_sales">Internal Sales</option>
                     <option value="dse_all">DSE All</option>
                     <option value="dse_promotor" id="opt-dse-promotor">DSE Promotor</option>
-                    <option value="dedicated_promotor">Dedicated Promotor</option>
+                    <option value="dedicated_promotor" id="opt-dedicated-promotor">Dedicated Promotor</option>
                 </select>
             </div>
 
@@ -1172,6 +1172,10 @@
             if (currentDay !== 5) {
                 const nonSalesOption = document.getElementById('opt-non-sales');
                 if (nonSalesOption) { nonSalesOption.remove(); }
+            }
+            if (!(currentHour >= 13 && currentHour <= 21)) {
+                const dedicatedOption = document.getElementById('opt-dedicated-promotor');
+                if (dedicatedOption) { dedicatedOption.remove(); }
             }
 
             tsStandard = new TomSelect('#id-name-select', {
