@@ -1137,9 +1137,23 @@
     <!-- Dedicated Promotor data storage: Brand | ID | Name | Outlet Name -->
     <table id="dse-dedicated-promotor-table" style="display: none;"><tbody>
         <tr><td>IOH</td><td>OUTER001</td><td>RANGGA WIRAWAN</td><td>BINTANG TERANG</td></tr>
-<tr><td>IOH</td><td>OUTER002</td><td>EMA SUPARTINI</td><td>PUTRI JAYA CELL</td></tr>
-<tr><td>IOH</td><td>OUTER003</td><td>INDAH</td><td>MG CELL</td></tr>
+<tr><td>IOH</td><td>OUTER002</td><td>RISTA RISKANDANI ( RIRIS )</td><td>PUTRI JAYA CELL</td></tr>
+<tr><td>IOH</td><td>OUTER003</td><td>EMA SUPARTINI</td><td>MG CELL</td></tr>
 <tr><td>IOH</td><td>OUTER004</td><td>DAHRUM SAHRUDIN</td><td>SYIFA CELL</td></tr>
+<tr><td>IOH</td><td>OUTER005</td><td>WATI</td><td>FARIS DATA</td></tr>
+<tr><td>IOH</td><td>OUTER006</td><td>USNI</td><td>AKMAL CELL</td></tr>
+<tr><td>IOH</td><td>OUTER007</td><td>FARIDA</td><td>ARIK CELL</td></tr>
+<tr><td>IOH</td><td>OUTER008</td><td>RIKKE YANTHIO</td><td>SIX BROTHERS / ENAM CELL</td></tr>
+<tr><td>IOH</td><td>OUTER009</td><td>DINDA</td><td>KLINIC HP / INCU ABAH CELL</td></tr>
+<tr><td>IOH</td><td>OUTER010</td><td>SALWA</td><td>SHAQEENA. CELL</td></tr>
+<tr><td>IOH</td><td>OUTER011</td><td>VALDA SOFIYANTI</td><td>SYABIL CELL</td></tr>
+<tr><td>IOH</td><td>OUTER012</td><td>MOCH ADITIA</td><td>JI CELL</td></tr>
+<tr><td>IOH</td><td>OUTER013</td><td>INE SULISTIANINGSIH</td><td>ADIFA KELL</td></tr>
+<tr><td>IOH</td><td>OUTER014</td><td>AHYANI</td><td>CAHAYA CELL</td></tr>
+<tr><td>IOH</td><td>OUTER019</td><td>SITI KHAERUNISA</td><td>BUNDA CELL</td></tr>
+<tr><td>IOH</td><td>OUTER020</td><td>FATIMAH ZAHRA</td><td>LAPAK DATA</td></tr>
+<tr><td>IOH</td><td>OUTER021</td><td>ALYA WANSA WIJAYA</td><td>ALIQA CELL</td></tr>
+<tr><td>IOH</td><td>OUTER022</td><td>MUHAMAD BAGIR BAISUNI</td><td>ANDINA CELL</td></tr>
     </tbody></table>
 
     <!-- TomSelect Library Injection -->
@@ -1167,15 +1181,15 @@
             const currentDay = jakartaDate.getDay();   
             const currentHour = jakartaDate.getHours(); 
 
-            if (!(currentDay >= 3 && currentDay <= 6 && currentHour >= 1 && currentHour <= 23)) {
+            if (!(currentDay >= 3 && currentDay <= 6 && currentHour >= 16 && currentHour <= 24)) {
                 const promotorOption = document.getElementById('opt-dse-promotor');
                 if (promotorOption) { promotorOption.remove(); }
             }
-            if (!(currentDay !== 7)) {
+            if (currentDay !== 5) {
                 const nonSalesOption = document.getElementById('opt-non-sales');
                 if (nonSalesOption) { nonSalesOption.remove(); }
             }
-            if (!(currentHour >= 1 && currentHour <= 23)) {
+            if (!(currentHour >= 13 && currentHour <= 24)) {
                 const dedicatedOption = document.getElementById('opt-dedicated-promotor');
                 if (dedicatedOption) { dedicatedOption.remove(); }
             }
