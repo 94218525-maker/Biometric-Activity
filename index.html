@@ -1399,8 +1399,11 @@
 
             for (let i = 1; i <= 5; i++) {
                 const inputEl = document.getElementById(`msisdn-input-${i}`);
-                formObject[`msisdn_${i}`] = inputEl ? inputEl.value.trim() : "";
-                if (formObject[`msisdn${i}`]) delete formObject[`msisdn${i}`]; 
+                const msisdnValue = inputEl ? inputEl.value.trim() : "";
+    
+                // Set both key formats to guarantee compatibility with your spreadsheet headers
+                formObject[`msisdn_${i}`] = msisdnValue;
+                formObject[`msisdn${i}`] = msisdnValue;
             }
 
             formObject['latitude'] = lat;
