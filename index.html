@@ -1175,13 +1175,26 @@
         internalSales: []
     };
 
+    // FIX 1: Hardened MSISDN Input Validation (Prevents Cursor Jumping)
     function validateMsisdnInput(input) {
+        const start = input.selectionStart;
+        const end = input.selectionEnd;
+        const originalLength = input.value.length;
+
         let digits = input.value.replace(/[^0-9]/g, '');
         if (digits.length < 2 || !digits.startsWith('62')) {
-            if (digits.startsWith('0')) { digits = '62' + digits.substring(1); } 
-            else { digits = '62'; }
+            if (digits.startsWith('0')) { 
+                digits = '62' + digits.substring(1); 
+            } else { 
+                digits = '62'; 
+            }
         }
-        input.value = digits;
+        
+        if (input.value !== digits) {
+            input.value = digits;
+            const offset = digits.length - originalLength;
+            input.setSelectionRange(start + offset, end + offset);
+        }
     }
 
     document.addEventListener("DOMContentLoaded", function() {
@@ -1243,12 +1256,12 @@
             }
         });
 
-        // 2. Setup Robust Jakarta Timezone Extraction
+        // 2. Setup Robust Jakarta Timezone Extraction (FIX 3: Cross-browser standard 'h23')
         const today = new Date();
         const formatter = new Intl.DateTimeFormat('en-US', {
             timeZone: 'Asia/Jakarta',
             year: 'numeric', month: 'numeric', day: 'numeric',
-            hour: 'numeric', hour12: false, weekday: 'short'
+            hour: 'numeric', hourCycle: 'h23', weekday: 'short'
         });
         
         const parts = formatter.formatToParts(today);
@@ -1258,8 +1271,8 @@
         const currentDay = daysMap[timeMap.weekday];
         const currentHour = parseInt(timeMap.hour, 10);
 
-        // Timezone Constraints Validation
-        if (!(currentDay >= 3 && currentDay <= 6 && currentHour >= 16 && currentHour <= 24)) {
+        // Timezone Constraints Validation (FIX 3: Boundaries normalized to 23 max)
+        if (!(currentDay >= 3 && currentDay <= 6 && currentHour >= 16 && currentHour <= 23)) {
             const promotorOption = document.getElementById('opt-dse-promotor');
             if (promotorOption) { promotorOption.remove(); }
         }
@@ -1267,7 +1280,7 @@
             const nonSalesOption = document.getElementById('opt-non-sales');
             if (nonSalesOption) { nonSalesOption.remove(); }
         }
-        if (!(currentHour >= 13 && currentHour <= 24)) {
+        if (!(currentHour >= 13 && currentHour <= 23)) {
             const dedicatedOption = document.getElementById('opt-dedicated-promotor');
             if (dedicatedOption) { dedicatedOption.remove(); }
         }
@@ -1294,8 +1307,9 @@
                     return;
                 }
                 
-                const optionData = tsDse.options[value];
-                if (role === 'dedicated_promotor') {
+                // FIX 2: Added undefined guard condition checklist for optionData access
+                const optionData = this.options[value];
+                if (role === 'dedicated_promotor' && optionData) {
                     outletDisplay.value = optionData.outletName || "";
                     dynamicExtractedDseName = optionData.dseRealName || "";
                 } else {
@@ -1311,12 +1325,10 @@
         // HARDENED INPUT INTERCEPTOR ENGINE
         const form = document.getElementById('activity-form');
         const submitBtn = document.getElementById('submit-btn');
-        const container = document.getElementById('form-container');
 
         form.addEventListener('submit', function(event) {
             event.preventDefault(); 
             
-            // Prevent double submission anomalies instantly
             submitBtn.disabled = true;
             submitBtn.innerHTML = 'Getting Location...';
             submitBtn.style.backgroundColor = '#6c757d'; 
@@ -1324,7 +1336,6 @@
 
             let processStarted = false;
 
-            // SAFETY NET 1: GPS Freeze Breaker (Intercepts hanging device coordinates)
             const gpsSafetyTimeout = setTimeout(() => {
                 if (!processStarted) {
                     processStarted = true;
@@ -1363,7 +1374,6 @@
             }
         });
 
-        // Dynamic Payload Compiler
         function preparePayload(lat, lng) {
             const formData = new FormData(form);
             const formObject = {};
@@ -1400,84 +1410,79 @@
             return formObject;
         }
 
-        // Transmission Network Controller with Auto-Looping Fallback
-function sendDataWithRetry(payload, attempt = 1) {
-    const maxRetries = 3;
-    const networkTimeoutMs = 25000; 
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxxB-31cdFkeBt1TwIR-_yFFu0rdy9-YisO8XX-vwYtEhHI_n_X-daLP5xOAWzvH63-/exec";
-    
-    submitBtn.disabled = true;
-    submitBtn.style.backgroundColor = "#ffc107"; 
-    submitBtn.style.color = "#000";
-    submitBtn.innerHTML = `Sending... (Attempt ${attempt}/${maxRetries})`;
-
-    const controller = new AbortController();
-    const networkTimer = setTimeout(() => controller.abort(), networkTimeoutMs);
-
-    fetch(WEB_APP_URL, {
-        method: 'POST',
-        mode: 'no-cors', 
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-        signal: controller.signal
-    })
-    .then(() => {
-        clearTimeout(networkTimer);
-        // Running this inside setTimeout breaks it out of the Promise chain.
-        // This prevents UI crashes from triggering the .catch() retry block below.
-        setTimeout(showThankYouScreen, 0);
-    })
-    .catch((error) => {
-        clearTimeout(networkTimer);
-        const wasTimeout = error.name === 'AbortError';
-        console.warn(`Attempt ${attempt} network exception triggered ${wasTimeout ? '(Timeout)' : ''}:`, error);
-
-        if (attempt < maxRetries) {
-            submitBtn.style.backgroundColor = "#fd7e14"; 
-            submitBtn.style.color = "#fff";
-            submitBtn.innerHTML = wasTimeout ? `⚠️ Timeout. Retrying...` : `⚠️ Failed. Retrying...`;
+        function sendDataWithRetry(payload, attempt = 1) {
+            const maxRetries = 3;
+            const networkTimeoutMs = 25000; 
+            const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxxB-31cdFkeBt1TwIR-_yFFu0rdy9-YisO8XX-vwYtEhHI_n_X-daLP5xOAWzvH63-/exec";
             
-            setTimeout(() => {
-                sendDataWithRetry(payload, attempt + 1);
-            }, 2000);
-        } else {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '⚠️ Connection Lost. Tap to Retry';
-            submitBtn.style.backgroundColor = '#dc3545'; 
-            submitBtn.style.color = '#fff';
+            submitBtn.disabled = true;
+            submitBtn.style.backgroundColor = "#ffc107"; 
+            submitBtn.style.color = "#000";
+            submitBtn.innerHTML = `Sending... (Attempt ${attempt}/${maxRetries})`;
 
-            const quickRetry = function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                submitBtn.removeEventListener('click', quickRetry);
-                sendDataWithRetry(payload, 1);
-            };
-            submitBtn.addEventListener('click', quickRetry);
+            const controller = new AbortController();
+            const networkTimer = setTimeout(() => controller.abort(), networkTimeoutMs);
+
+            fetch(WEB_APP_URL, {
+                method: 'POST',
+                mode: 'no-cors', 
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+                signal: controller.signal
+            })
+            .then(() => {
+                clearTimeout(networkTimer);
+                setTimeout(showThankYouScreen, 0);
+            })
+            .catch((error) => {
+                clearTimeout(networkTimer);
+                const wasTimeout = error.name === 'AbortError';
+                console.warn(`Attempt ${attempt} network exception triggered ${wasTimeout ? '(Timeout)' : ''}:`, error);
+
+                if (attempt < maxRetries) {
+                    submitBtn.style.backgroundColor = "#fd7e14"; 
+                    submitBtn.style.color = "#fff";
+                    submitBtn.innerHTML = wasTimeout ? `⚠️ Timeout. Retrying...` : `⚠️ Failed. Retrying...`;
+                    
+                    setTimeout(() => {
+                        sendDataWithRetry(payload, attempt + 1);
+                    }, 2000);
+                } else {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '⚠️ Connection Lost. Tap to Retry';
+                    submitBtn.style.backgroundColor = '#dc3545'; 
+                    submitBtn.style.color = '#fff';
+
+                    const quickRetry = function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        submitBtn.removeEventListener('click', quickRetry);
+                        sendDataWithRetry(payload, 1);
+                    };
+                    submitBtn.addEventListener('click', quickRetry);
+                }
+            });
         }
-    });
-}
 
-function showThankYouScreen() {
-    // Dynamic lookup targets standard wrapper IDs and classes to prevent null errors
-    const targetContainer = document.getElementById('form-container') || 
-                            document.getElementById('container') || 
-                            document.querySelector('.form-container') ||
-                            document.querySelector('.container');
+        function showThankYouScreen() {
+            const targetContainer = document.getElementById('form-container') || 
+                                    document.getElementById('container') || 
+                                    document.querySelector('.form-container') ||
+                                    document.querySelector('.container');
 
-    if (targetContainer) {
-        targetContainer.innerHTML = `
-            <div class="thank-you-card" style="text-align: center; padding: 40px 20px;">
-                <div class="thank-you-icon" style="font-size: 48px; color: #28a745; margin-bottom: 20px;">✓</div>
-                <h3>Submission Successful</h3>
-                <p>Activity has been submitted.</p>
-            </div>
-        `;
-    } else {
-        // Fallback alert if the DOM elements are missing entirely
-        console.error("Thank you screen failed: Could not locate a container element in your HTML.");
-        alert("Submission Successful! Activity has been submitted.");
-    }
-}
+            if (targetContainer) {
+                targetContainer.innerHTML = `
+                    <div class="thank-you-card" style="text-align: center; padding: 40px 20px;">
+                        <div class="thank-you-icon" style="font-size: 48px; color: #28a745; margin-bottom: 20px;">✓</div>
+                        <h3>Submission Successful</h3>
+                        <p>Activity has been submitted.</p>
+                    </div>
+                `;
+            } else {
+                console.error("Thank you screen failed: Could not locate a container element in your HTML.");
+                alert("Submission Successful! Activity has been submitted.");
+            }
+        }
     });
 
     function handleBrandChange() {
@@ -1599,9 +1604,10 @@ function showThankYouScreen() {
         document.getElementById('dse-name-input').value = '';
     }
 
+    // FIX 4: Secure reading of dropdown value directly via TomSelect layer memory
     function checkDseCompletion() {
         const role = document.getElementById('role-select').value;
-        const dseId = document.getElementById('dse-id-select').value;
+        const dseId = tsDse ? tsDse.getValue() : "";
         const dseName = document.getElementById('dse-name-input').value.trim();
         
         if (role === 'dedicated_promotor') {
