@@ -1410,7 +1410,8 @@
         }
 
         function sendDataWithRetry(payload) {
-    const networkTimeoutMs = 20000; 
+    // 1. INCREASE TIMEOUT: Must be > 30000ms (because of lock.waitLock(30000))
+    const networkTimeoutMs = 45000; 
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzvKgHPcuQxpm5PsRjpTpObuPgB5uE5ZdXj_H4C_6vgXJXM-35DHLNTHqt1qUy-2GXY/exec";
     
     // UI State: Sending
@@ -1436,7 +1437,9 @@
     .catch((error) => {
         clearTimeout(networkTimer);
         const wasTimeout = error.name === 'AbortError';
-        console.warn(`Network exception triggered ${wasTimeout ? '(Timeout)' : ''}:`, error);
+        
+        // Log for debugging
+        console.warn(`Request failed ${wasTimeout ? '(Timeout)' : ''}:`, error);
 
         // UI State: Failure / Show Manual Retry Button
         submitBtn.disabled = false;
@@ -1449,7 +1452,7 @@
             e.preventDefault();
             e.stopPropagation();
             submitBtn.removeEventListener('click', manualRetry);
-            sendDataWithRetry(payload); // Start a brand new, manual attempt
+            sendDataWithRetry(payload);
         };
         
         submitBtn.addEventListener('click', manualRetry);
