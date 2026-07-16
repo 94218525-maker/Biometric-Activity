@@ -1401,10 +1401,9 @@
         }
 
         // Transmission Network Controller with Auto-Looping Fallback
-        // Transmission Network Controller with Auto-Looping Fallback
 function sendDataWithRetry(payload, attempt = 1) {
     const maxRetries = 3;
-    const networkTimeoutMs = 25000; // FIXED: Increased to 25s since Google Apps Script macro URLs take longer to process
+    const networkTimeoutMs = 25000; 
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxxB-31cdFkeBt1TwIR-_yFFu0rdy9-YisO8XX-vwYtEhHI_n_X-daLP5xOAWzvH63-/exec";
     
     submitBtn.disabled = true;
@@ -1424,7 +1423,9 @@ function sendDataWithRetry(payload, attempt = 1) {
     })
     .then(() => {
         clearTimeout(networkTimer);
-        showThankYouScreen();
+        // Running this inside setTimeout breaks it out of the Promise chain.
+        // This prevents UI crashes from triggering the .catch() retry block below.
+        setTimeout(showThankYouScreen, 0);
     })
     .catch((error) => {
         clearTimeout(networkTimer);
@@ -1432,8 +1433,7 @@ function sendDataWithRetry(payload, attempt = 1) {
         console.warn(`Attempt ${attempt} network exception triggered ${wasTimeout ? '(Timeout)' : ''}:`, error);
 
         if (attempt < maxRetries) {
-            // Visual state feedback updated instantly prior to looping the interval countdown
-            submitBtn.style.backgroundColor = "#fd7e14"; // Warning Orange
+            submitBtn.style.backgroundColor = "#fd7e14"; 
             submitBtn.style.color = "#fff";
             submitBtn.innerHTML = wasTimeout ? `⚠️ Timeout. Retrying...` : `⚠️ Failed. Retrying...`;
             
@@ -1441,13 +1441,11 @@ function sendDataWithRetry(payload, attempt = 1) {
                 sendDataWithRetry(payload, attempt + 1);
             }, 2000);
         } else {
-            // Fail-safe manual escape latch if connection breaks down permanently after 3 attempts
             submitBtn.disabled = false;
             submitBtn.innerHTML = '⚠️ Connection Lost. Tap to Retry';
             submitBtn.style.backgroundColor = '#dc3545'; 
             submitBtn.style.color = '#fff';
 
-            // Fast-track manual override: Re-sending bypasses the slow GPS lookup and fires the payload directly
             const quickRetry = function(e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -1459,15 +1457,27 @@ function sendDataWithRetry(payload, attempt = 1) {
     });
 }
 
-        function showThankYouScreen() {
-            container.innerHTML = `
-                <div class="thank-you-card">
-                    <div class="thank-you-icon">✓</div>
-                    <h3>Submission Successful</h3>
-                    <p>Activity has been submitted.</p>
-                </div>
-            `;
-        }
+function showThankYouScreen() {
+    // Dynamic lookup targets standard wrapper IDs and classes to prevent null errors
+    const targetContainer = document.getElementById('form-container') || 
+                            document.getElementById('container') || 
+                            document.querySelector('.form-container') ||
+                            document.querySelector('.container');
+
+    if (targetContainer) {
+        targetContainer.innerHTML = `
+            <div class="thank-you-card" style="text-align: center; padding: 40px 20px;">
+                <div class="thank-you-icon" style="font-size: 48px; color: #28a745; margin-bottom: 20px;">✓</div>
+                <h3>Submission Successful</h3>
+                <p>Activity has been submitted.</p>
+            </div>
+        `;
+    } else {
+        // Fallback alert if the DOM elements are missing entirely
+        console.error("Thank you screen failed: Could not locate a container element in your HTML.");
+        alert("Submission Successful! Activity has been submitted.");
+    }
+}
     });
 
     function handleBrandChange() {
