@@ -1409,59 +1409,52 @@
             return formObject;
         }
 
-        function sendDataWithRetry(payload, attempt = 1) {
-            const maxRetries = 3;
-            const networkTimeoutMs = 25000; 
-            const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzvKgHPcuQxpm5PsRjpTpObuPgB5uE5ZdXj_H4C_6vgXJXM-35DHLNTHqt1qUy-2GXY/exec";
-            
-            submitBtn.disabled = true;
-            submitBtn.style.backgroundColor = "#ffc107"; 
-            submitBtn.style.color = "#000";
-            submitBtn.innerHTML = `Sending... (Attempt ${attempt}/${maxRetries})`;
+        function sendDataWithRetry(payload) {
+    const networkTimeoutMs = 20000; 
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzvKgHPcuQxpm5PsRjpTpObuPgB5uE5ZdXj_H4C_6vgXJXM-35DHLNTHqt1qUy-2GXY/exec";
+    
+    // UI State: Sending
+    submitBtn.disabled = true;
+    submitBtn.style.backgroundColor = "#ffc107"; 
+    submitBtn.style.color = "#000";
+    submitBtn.innerHTML = `Sending...`;
 
-            const controller = new AbortController();
-            const networkTimer = setTimeout(() => controller.abort(), networkTimeoutMs);
+    const controller = new AbortController();
+    const networkTimer = setTimeout(() => controller.abort(), networkTimeoutMs);
 
-            fetch(WEB_APP_URL, {
-                method: 'POST',
-                mode: 'no-cors', 
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify(payload),
-                signal: controller.signal
-            })
-            .then(() => {
-                clearTimeout(networkTimer);
-                setTimeout(showThankYouScreen, 0);
-            })
-            .catch((error) => {
-                clearTimeout(networkTimer);
-                const wasTimeout = error.name === 'AbortError';
-                console.warn(`Attempt ${attempt} network exception triggered ${wasTimeout ? '(Timeout)' : ''}:`, error);
+    fetch(WEB_APP_URL, {
+        method: 'POST',
+        mode: 'no-cors', 
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload),
+        signal: controller.signal
+    })
+    .then(() => {
+        clearTimeout(networkTimer);
+        setTimeout(showThankYouScreen, 0);
+    })
+    .catch((error) => {
+        clearTimeout(networkTimer);
+        const wasTimeout = error.name === 'AbortError';
+        console.warn(`Network exception triggered ${wasTimeout ? '(Timeout)' : ''}:`, error);
 
-                if (attempt < maxRetries) {
-                    submitBtn.style.backgroundColor = "#fd7e14"; 
-                    submitBtn.style.color = "#fff";
-                    submitBtn.innerHTML = wasTimeout ? `⚠️ Timeout. Retrying...` : `⚠️ Failed. Retrying...`;
-                    
-                    setTimeout(() => {
-                        sendDataWithRetry(payload, attempt + 1);
-                    }, 2000);
-                } else {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '⚠️ Connection Lost. Tap to Retry';
-                    submitBtn.style.backgroundColor = '#dc3545'; 
-                    submitBtn.style.color = '#fff';
+        // UI State: Failure / Show Manual Retry Button
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = wasTimeout ? '⚠️ Timeout. Tap to Retry' : '⚠️ Failed. Tap to Retry';
+        submitBtn.style.backgroundColor = '#dc3545'; 
+        submitBtn.style.color = '#fff';
 
-                    const quickRetry = function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        submitBtn.removeEventListener('click', quickRetry);
-                        sendDataWithRetry(payload, 1);
-                    };
-                    submitBtn.addEventListener('click', quickRetry);
-                }
-            });
-        }
+        // Manual Retry Listener
+        const manualRetry = function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            submitBtn.removeEventListener('click', manualRetry);
+            sendDataWithRetry(payload); // Start a brand new, manual attempt
+        };
+        
+        submitBtn.addEventListener('click', manualRetry);
+    });
+}
 
         function showThankYouScreen() {
             const targetContainer = document.getElementById('form-container') || 
