@@ -1415,15 +1415,17 @@ function sendDataWithRetry(payload, attempt = 1) {
     const controller = new AbortController();
     const networkTimer = setTimeout(() => controller.abort(), networkTimeoutMs);
 
-    fetch(WEB_APP_URL, { 
-    method: 'POST', 
-    mode: 'no-cors', 
-    body: formData 
-})
-.then(() => {
-    // Treat any response as a success since data was collected
-    showThankYouScreen();
-})
+    fetch(WEB_APP_URL, {
+        method: 'POST',
+        mode: 'no-cors', 
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: controller.signal
+    })
+    .then(() => {
+        clearTimeout(networkTimer);
+        showThankYouScreen();
+    })
     .catch((error) => {
         clearTimeout(networkTimer);
         const wasTimeout = error.name === 'AbortError';
@@ -1458,17 +1460,15 @@ function sendDataWithRetry(payload, attempt = 1) {
 }
 
         function showThankYouScreen() {
-    // Explicitly select the element to avoid scope issues
-    const container = document.getElementById('container'); 
-    
-    container.innerHTML = `
-        <div class="thank-you-card">
-            <div class="thank-you-icon">✓</div>
-            <h3>Submission Successful</h3>
-            <p>Activity has been submitted.</p>
-        </div>
-    `;
-}
+            container.innerHTML = `
+                <div class="thank-you-card">
+                    <div class="thank-you-icon">✓</div>
+                    <h3>Submission Successful</h3>
+                    <p>Activity has been submitted.</p>
+                </div>
+            `;
+        }
+    });
 
     function handleBrandChange() {
         document.getElementById('sales-status-select').value = '';
