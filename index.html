@@ -1157,495 +1157,621 @@
     </tbody></table>
 
     <!-- TomSelect Library Injection -->
-    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
-    <script>
-        let tsStandard = null;
-        let tsDse = null;
-        const MAX_MSISDN = 5;
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css">
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 
-        let dynamicExtractedDseName = "";
+<script>
+    let tsStandard = null;
+    let tsDse = null;
+    const MAX_MSISDN = 5;
+    let dynamicExtractedDseName = "";
 
-        function validateMsisdnInput(input) {
-            let digits = input.value.replace(/[^0-9]/g, '');
-            if (digits.length < 2 || !digits.startsWith('62')) {
-                if (digits.startsWith('0')) { digits = '62' + digits.substring(1); } 
-                else { digits = '62'; }
-            }
-            input.value = digits;
+    // Global in-memory data caches to completely prevent DOM layout thrashing
+    const dataCache = {
+        nonSales: [],
+        dsePromotor: [],
+        dseAll: [],
+        dseDedicated: [],
+        internalSales: []
+    };
+
+    function validateMsisdnInput(input) {
+        let digits = input.value.replace(/[^0-9]/g, '');
+        if (digits.length < 2 || !digits.startsWith('62')) {
+            if (digits.startsWith('0')) { digits = '62' + digits.substring(1); } 
+            else { digits = '62'; }
         }
+        input.value = digits;
+    }
 
-        document.addEventListener("DOMContentLoaded", function() {
-            // Timezone Constraints Validation
-            const targetLocaleStr = new Date().toLocaleString("en-US", {timeZone: "Asia/Jakarta"});
-            const jakartaDate = new Date(targetLocaleStr);
-            const currentDay = jakartaDate.getDay();   
-            const currentHour = jakartaDate.getHours(); 
-
-            if (!(currentDay >= 3 && currentDay <= 6 && currentHour >= 16 && currentHour <= 24)) {
-                const promotorOption = document.getElementById('opt-dse-promotor');
-                if (promotorOption) { promotorOption.remove(); }
-            }
-            if (currentDay !== 5) {
-                const nonSalesOption = document.getElementById('opt-non-sales');
-                if (nonSalesOption) { nonSalesOption.remove(); }
-            }
-            if (!(currentHour >= 13 && currentHour <= 24)) {
-                const dedicatedOption = document.getElementById('opt-dedicated-promotor');
-                if (dedicatedOption) { dedicatedOption.remove(); }
-            }
-
-            tsStandard = new TomSelect('#id-name-select', {
-                create: false, valueField: 'value', labelField: 'text', searchField: ['text'],
-                sortField: { field: "employeeName", direction: "asc" },
-                onChange: function(value) { if(value) { showQuestion5(); } else { hideQuestion5(); } }
-            });
-
-            tsDse = new TomSelect('#dse-id-select', {
-                create: false, valueField: 'value', labelField: 'text', searchField: ['text'],
-                sortField: { field: "text", direction: "asc" },
-                placeholder: "Search ID...",
-                onChange: function(value) {
-                    const role = document.getElementById('role-select').value;
-                    const outletDisplay = document.getElementById('display-outlet-name');
-                    
-                    if(!value) {
-                        outletDisplay.value = "";
-                        dynamicExtractedDseName = "";
-                        hideQuestion5();
-                        return;
-                    }
-                    
-                    const optionData = tsDse.options[value];
-                    if (role === 'dedicated_promotor') {
-                        outletDisplay.value = optionData.outletName || "";
-                        dynamicExtractedDseName = optionData.dseRealName || "";
-                    } else {
-                        outletDisplay.value = "";
-                        dynamicExtractedDseName = "";
-                    }
-                    checkDseCompletion();
-                }
-            });
-
-            document.getElementById('dse-name-input').addEventListener('input', checkDseCompletion);
-
-            const form = document.getElementById('activity-form');
-            const submitBtn = document.getElementById('submit-btn');
-            const container = document.getElementById('form-container');
-
-            form.addEventListener('submit', function(event) {
-                event.preventDefault(); 
-                submitBtn.disabled = true;
-                submitBtn.textContent = "Locating...";
-
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        function(position) {
-                            document.getElementById('geo-latitude').value = position.coords.latitude;
-                            document.getElementById('geo-longitude').value = position.coords.longitude;
-                            document.getElementById('checkin-time').value = new Date().toISOString();
-                            sendDataToGoogleSheets();
-                        }, 
-                        function(error) {
-                            alert("Location access denied or timed out. Submitting without coordinates.");
-                            document.getElementById('checkin-time').value = new Date().toISOString();
-                            sendDataToGoogleSheets();
-                        },
-                        { enableHighAccuracy: true, timeout: 6000 }
-                    );
-                } else {
-                    document.getElementById('checkin-time').value = new Date().toISOString();
-                    sendDataToGoogleSheets();
-                }
-            });
-
-            function sendDataToGoogleSheets() {
-                submitBtn.textContent = "Submitting Data...";
-                const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxxB-31cdFkeBt1TwIR-_yFFu0rdy9-YisO8XX-vwYtEhHI_n_X-daLP5xOAWzvH63-/exec"; 
-                const formData = new FormData(form);
-                const formObject = {};
-                
-                formData.forEach((value, key) => { formObject[key] = value; });
-
-                const role = document.getElementById('role-select').value;
-                if (role === 'dse_all' || role === 'dse_promotor') {
-                    formObject['dse_id'] = tsDse.getValue();
-                    formObject['dse_name_free'] = document.getElementById('dse-name-input').value.trim();
-                } else if (role === 'dedicated_promotor') {
-                    formObject['dse_id'] = tsDse.getValue();
-                    formObject['dse_name_free'] = dynamicExtractedDseName;
-                }
-
-                const locType = document.getElementById('location-type-select').value;
-                let locDetail = "";
-                if(locType && document.getElementById(`input-${locType}`)) {
-                    locDetail = document.getElementById(`input-${locType}`).value;
-                }
-                formObject['location_detail'] = locDetail;
-                formObject['nama_kegiatan'] = document.getElementById('input-nama-kegiatan').value;
-
-                for (let i = 1; i <= 5; i++) {
-                    const inputEl = document.getElementById(`msisdn-input-${i}`);
-                    formObject[`msisdn${i}`] = inputEl ? inputEl.value.trim() : "";
-                }
-
-                fetch(WEB_APP_URL, {
-                    method: 'POST',
-                    mode: 'no-cors', 
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formObject)
-                })
-                .then(() => { showThankYouScreen(); })
-                .catch(error => {
-                    console.error('Submission Error:', error);
-                    alert("Submission failed. Check network connection.");
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = "Submit Activity";
-                });
-            }
-
-            function showThankYouScreen() {
-                container.innerHTML = `
-                    <div class="thank-you-card">
-                        <div class="thank-you-icon">✓</div>
-                        <h3>Submission Successful</h3>
-                        <p>Activity has been submitted.</p>
-                    </div>
-                `;
+    document.addEventListener("DOMContentLoaded", function() {
+        // 1. Build Data Cache ONCE from DOM tables on startup
+        document.querySelectorAll('#non-sales-table tbody tr').forEach(row => {
+            const cells = row.querySelectorAll('td');
+            if (cells.length >= 2) {
+                const id = cells[0].textContent.trim();
+                const name = cells[1].textContent.trim();
+                dataCache.nonSales.push({ value: `${id} - ${name}`, text: `${id} - ${name}`, employeeName: name });
             }
         });
 
-        function handleBrandChange() {
-            document.getElementById('sales-status-select').value = '';
-            const roleSelect = document.getElementById('role-select');
-            roleSelect.value = '';
-            roleSelect.removeAttribute('required');
-            document.getElementById('role-section').style.display = 'none';
-            const salesPositionSelect = document.getElementById('sales-position-select');
-            salesPositionSelect.value = '';
-            document.getElementById('sales-position-section').style.display = 'none';
-            salesPositionSelect.removeAttribute('required');
-            hideQuestion4();
-            document.getElementById('sales-status-section').style.display = 'block';
-            document.getElementById('sales-status-select').setAttribute('required', 'true');
+        document.querySelectorAll('#dse-promotor-table tbody tr').forEach(row => {
+            const cells = row.querySelectorAll('td');
+            if (cells.length >= 2) {
+                dataCache.dsePromotor.push({
+                    brand: cells[0].textContent.trim().toUpperCase(),
+                    value: cells[1].textContent.trim(),
+                    text: cells[1].textContent.trim()
+                });
+            }
+        });
+
+        document.querySelectorAll('#dse-data-table tbody tr').forEach(row => {
+            const cells = row.querySelectorAll('td');
+            if (cells.length >= 2) {
+                dataCache.dseAll.push({
+                    brand: cells[0].textContent.trim().toUpperCase(),
+                    value: cells[1].textContent.trim(),
+                    text: cells[1].textContent.trim()
+                });
+            }
+        });
+
+        document.querySelectorAll('#dse-dedicated-promotor-table tbody tr').forEach(row => {
+            const cells = row.querySelectorAll('td');
+            if (cells.length >= 4) {
+                dataCache.dseDedicated.push({
+                    brand: cells[0].textContent.trim().toUpperCase(),
+                    value: cells[1].textContent.trim(),
+                    text: `${cells[1].textContent.trim()} - ${cells[2].textContent.trim()}`,
+                    dseRealName: cells[2].textContent.trim(),
+                    outletName: cells[3].textContent.trim()
+                });
+            }
+        });
+
+        document.querySelectorAll('#employee-data-table tbody tr').forEach(row => {
+            const cells = row.querySelectorAll('td');
+            if (cells.length >= 4) {
+                dataCache.internalSales.push({
+                    brand: cells[0].textContent.trim().toUpperCase(),
+                    position: cells[1].textContent.trim().toLowerCase(),
+                    value: `${cells[2].textContent.trim()} - ${cells[3].textContent.trim()}`,
+                    text: `${cells[2].textContent.trim()} - ${cells[3].textContent.trim()}`,
+                    employeeName: cells[3].textContent.trim()
+                });
+            }
+        });
+
+        // 2. Setup Robust Jakarta Timezone Extraction
+        const today = new Date();
+        const formatter = new Intl.DateTimeFormat('en-US', {
+            timeZone: 'Asia/Jakarta',
+            year: 'numeric', month: 'numeric', day: 'numeric',
+            hour: 'numeric', hour12: false, weekday: 'short'
+        });
+        
+        const parts = formatter.formatToParts(today);
+        const timeMap = Object.fromEntries(parts.map(p => [p.type, p.value]));
+        
+        const daysMap = { 'Sun': 0, 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6 };
+        const currentDay = daysMap[timeMap.weekday];
+        const currentHour = parseInt(timeMap.hour, 10);
+
+        // Timezone Constraints Validation
+        if (!(currentDay >= 3 && currentDay <= 6 && currentHour >= 16 && currentHour <= 24)) {
+            const promotorOption = document.getElementById('opt-dse-promotor');
+            if (promotorOption) { promotorOption.remove(); }
+        }
+        if (currentDay !== 5) {
+            const nonSalesOption = document.getElementById('opt-non-sales');
+            if (nonSalesOption) { nonSalesOption.remove(); }
+        }
+        if (!(currentHour >= 13 && currentHour <= 24)) {
+            const dedicatedOption = document.getElementById('opt-dedicated-promotor');
+            if (dedicatedOption) { dedicatedOption.remove(); }
         }
 
-        function handleSalesStatusChange() {
-            const statusSelect = document.getElementById('sales-status-select');
-            const roleSection = document.getElementById('role-section');
-            const roleSelect = document.getElementById('role-select');
-            const salesPositionSection = document.getElementById('sales-position-section');
-            const salesPositionSelect = document.getElementById('sales-position-select');
+        // Initialize Selection Dropdowns
+        tsStandard = new TomSelect('#id-name-select', {
+            create: false, valueField: 'value', labelField: 'text', searchField: ['text'],
+            sortField: { field: "employeeName", direction: "asc" },
+            onChange: function(value) { if(value) { showQuestion5(); } else { hideQuestion5(); } }
+        });
+
+        tsDse = new TomSelect('#dse-id-select', {
+            create: false, valueField: 'value', labelField: 'text', searchField: ['text'],
+            sortField: { field: "text", direction: "asc" },
+            placeholder: "Search ID...",
+            onChange: function(value) {
+                const role = document.getElementById('role-select').value;
+                const outletDisplay = document.getElementById('display-outlet-name');
+                
+                if(!value) {
+                    outletDisplay.value = "";
+                    dynamicExtractedDseName = "";
+                    hideQuestion5();
+                    return;
+                }
+                
+                const optionData = tsDse.options[value];
+                if (role === 'dedicated_promotor') {
+                    outletDisplay.value = optionData.outletName || "";
+                    dynamicExtractedDseName = optionData.dseRealName || "";
+                } else {
+                    outletDisplay.value = "";
+                    dynamicExtractedDseName = "";
+                }
+                checkDseCompletion();
+            }
+        });
+
+        document.getElementById('dse-name-input').addEventListener('input', checkDseCompletion);
+
+        // HARDENED INPUT INTERCEPTOR ENGINE
+        const form = document.getElementById('activity-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const container = document.getElementById('form-container');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); 
             
-            roleSelect.value = '';
-            salesPositionSelect.value = '';
+            // Prevent double submission anomalies instantly
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'Getting Location...';
+            submitBtn.style.backgroundColor = '#6c757d'; 
+            submitBtn.style.color = '#fff';
+
+            let processStarted = false;
+
+            // SAFETY NET 1: GPS Freeze Breaker (Intercepts hanging device coordinates)
+            const gpsSafetyTimeout = setTimeout(() => {
+                if (!processStarted) {
+                    processStarted = true;
+                    console.warn("GPS hardware timed out. Transitioning to fallback network mode.");
+                    const payload = preparePayload("", "");
+                    sendDataWithRetry(payload, 1);
+                }
+            }, 4000); 
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        if (!processStarted) {
+                            processStarted = true;
+                            clearTimeout(gpsSafetyTimeout);
+                            const payload = preparePayload(position.coords.latitude, position.coords.longitude);
+                            sendDataWithRetry(payload, 1);
+                        }
+                    }, 
+                    function(error) {
+                        if (!processStarted) {
+                            processStarted = true;
+                            clearTimeout(gpsSafetyTimeout);
+                            console.warn("GPS tracking unavailable. Compiling standard fallback package.");
+                            const payload = preparePayload("", "");
+                            sendDataWithRetry(payload, 1);
+                        }
+                    },
+                    { enableHighAccuracy: false, timeout: 3500, maximumAge: 60000 } 
+                );
+            } else {
+                processStarted = true;
+                clearTimeout(gpsSafetyTimeout);
+                const payload = preparePayload("", "");
+                sendDataWithRetry(payload, 1);
+            }
+        });
+
+        // Dynamic Payload Compiler
+        function preparePayload(lat, lng) {
+            const formData = new FormData(form);
+            const formObject = {};
+            
+            formData.forEach((value, key) => { formObject[key] = value; });
+
+            const role = document.getElementById('role-select').value;
+            if (role === 'dse_all' || role === 'dse_promotor') {
+                formObject['dse_id'] = tsDse.getValue();
+                formObject['dse_name_free'] = document.getElementById('dse-name-input').value.trim();
+            } else if (role === 'dedicated_promotor') {
+                formObject['dse_id'] = tsDse.getValue();
+                formObject['dse_name_free'] = dynamicExtractedDseName;
+            }
+
+            const locType = document.getElementById('location-type-select').value;
+            let locDetail = "";
+            if(locType && document.getElementById(`input-${locType}`)) {
+                locDetail = document.getElementById(`input-${locType}`).value;
+            }
+            formObject['location_detail'] = locDetail;
+            formObject['nama_kegiatan'] = document.getElementById('input-nama-kegiatan').value;
+
+            for (let i = 1; i <= 5; i++) {
+                const inputEl = document.getElementById(`msisdn-input-${i}`);
+                formObject[`msisdn_${i}`] = inputEl ? inputEl.value.trim() : "";
+                if (formObject[`msisdn${i}`]) delete formObject[`msisdn${i}`]; 
+            }
+
+            formObject['latitude'] = lat;
+            formObject['longitude'] = lng;
+            formObject['checkin_time'] = new Date().toISOString();
+
+            return formObject;
+        }
+
+        // Transmission Network Controller with Auto-Looping Fallback
+        function sendDataWithRetry(payload, attempt = 1) {
+            const maxRetries = 3;
+            const networkTimeoutMs = 8000; // SAFETY NET 2: Internal connection timeout threshold
+            const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyGCJi3nveVYyeVbLRzrxBlN0xjQK-gmHP2DoH3umnWFJ6KRrWuf4VQXhuE4AxQHf3v/exec";
+            
+            submitBtn.disabled = true;
+            submitBtn.style.backgroundColor = "#ffc107"; 
+            submitBtn.style.color = "#000";
+            submitBtn.innerHTML = `Sending... (Attempt ${attempt}/${maxRetries})`;
+
+            const controller = new AbortController();
+            const networkTimer = setTimeout(() => controller.abort(), networkTimeoutMs);
+
+            fetch(WEB_APP_URL, {
+                method: 'POST',
+                mode: 'no-cors', 
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+                signal: controller.signal
+            })
+            .then(() => {
+                clearTimeout(networkTimer);
+                showThankYouScreen();
+            })
+            .catch((error) => {
+                clearTimeout(networkTimer);
+                const wasTimeout = error.name === 'AbortError';
+                console.warn(`Attempt ${attempt} network exception triggered ${wasTimeout ? '(Timeout)' : ''}:`, error);
+
+                if (attempt < maxRetries) {
+                    // FIX: Visual state feedback updated instantly prior to looping the interval countdown
+                    submitBtn.style.backgroundColor = "#fd7e14"; // Warning Orange
+                    submitBtn.style.color = "#fff";
+                    submitBtn.innerHTML = wasTimeout ? `⚠️ Timeout. Retrying...` : `⚠️ Failed. Retrying...`;
+                    
+                    setTimeout(() => {
+                        sendDataWithRetry(payload, attempt + 1);
+                    }, 2000);
+                } else {
+                    // Fail-safe manual escape latch if connection breaks down permanently after 3 attempts
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '⚠️ Connection Lost. Tap to Retry';
+                    submitBtn.style.backgroundColor = '#dc3545'; 
+                    submitBtn.style.color = '#fff';
+                }
+            });
+        }
+
+        function showThankYouScreen() {
+            container.innerHTML = `
+                <div class="thank-you-card">
+                    <div class="thank-you-icon">✓</div>
+                    <h3>Submission Successful</h3>
+                    <p>Activity has been submitted.</p>
+                </div>
+            `;
+        }
+    });
+
+    function handleBrandChange() {
+        document.getElementById('sales-status-select').value = '';
+        const roleSelect = document.getElementById('role-select');
+        roleSelect.value = '';
+        roleSelect.removeAttribute('required');
+        document.getElementById('role-section').style.display = 'none';
+        const salesPositionSelect = document.getElementById('sales-position-select');
+        salesPositionSelect.value = '';
+        document.getElementById('sales-position-section').style.display = 'none';
+        salesPositionSelect.removeAttribute('required');
+        hideQuestion4();
+        document.getElementById('sales-status-section').style.display = 'block';
+        document.getElementById('sales-status-select').setAttribute('required', 'true');
+    }
+
+    function handleSalesStatusChange() {
+        const statusSelect = document.getElementById('sales-status-select');
+        const roleSection = document.getElementById('role-section');
+        const roleSelect = document.getElementById('role-select');
+        const salesPositionSection = document.getElementById('sales-position-section');
+        const salesPositionSelect = document.getElementById('sales-position-select');
+        
+        roleSelect.value = '';
+        salesPositionSelect.value = '';
+        salesPositionSection.style.display = 'none';
+        salesPositionSelect.removeAttribute('required');
+        hideQuestion4();
+
+        if (statusSelect.value === 'sales') {
+            roleSection.style.display = 'block';
+            roleSelect.setAttribute('required', 'true');
+        } else if (statusSelect.value === 'non_sales') {
+            roleSection.style.display = 'none';
+            roleSelect.removeAttribute('required');
+            showQuestion4();
+        }
+    }
+
+    function handleRoleChange() {
+        const roleSelect = document.getElementById('role-select');
+        const salesPositionSection = document.getElementById('sales-position-section');
+        const salesPositionSelect = document.getElementById('sales-position-select');
+        
+        salesPositionSelect.value = '';
+        hideQuestion4();
+
+        const optionsToToggle = ['loc-kampus', 'loc-residential', 'loc-pasar', 'loc-others'];
+        const isDsePromotor = roleSelect.value === 'dse_promotor';
+        
+        optionsToToggle.forEach(id => { 
+            const optElement = document.getElementById(id);
+            if (optElement) { 
+                optElement.disabled = isDsePromotor;
+                optElement.hidden = isDsePromotor;
+                optElement.style.display = isDsePromotor ? 'none' : 'block';
+            } 
+        });
+        
+        if (roleSelect.value === 'internal_sales') {
+            salesPositionSection.style.display = 'block';
+            salesPositionSelect.setAttribute('required', 'true');
+        } else if (roleSelect.value !== "") {
             salesPositionSection.style.display = 'none';
             salesPositionSelect.removeAttribute('required');
-            hideQuestion4();
-
-            if (statusSelect.value === 'sales') {
-                roleSection.style.display = 'block';
-                roleSelect.setAttribute('required', 'true');
-            } else if (statusSelect.value === 'non_sales') {
-                roleSection.style.display = 'none';
-                roleSelect.removeAttribute('required');
-                showQuestion4();
-            }
+            showQuestion4();
         }
+    }
 
-        function handleRoleChange() {
-            const roleSelect = document.getElementById('role-select');
-            const salesPositionSection = document.getElementById('sales-position-section');
-            const salesPositionSelect = document.getElementById('sales-position-select');
+    function handlePositionChange() {
+        const salesPositionSelect = document.getElementById('sales-position-select');
+        hideQuestion4();
+        if (salesPositionSelect.value !== "") { showQuestion4(); }
+    }
+
+    function showQuestion4() {
+        const statusSelect = document.getElementById('sales-status-select').value;
+        const roleSelect = document.getElementById('role-select').value;
+        document.getElementById('question-4-section').style.display = 'block';
+
+        const nameInputWrapper = document.getElementById('dse-name-input-wrapper');
+        const nameInput = document.getElementById('dse-name-input');
+        const outletSection = document.getElementById('outlet-display-section');
+
+        if (statusSelect === 'non_sales' || roleSelect === 'internal_sales') {
+            document.getElementById('standard-lookup-wrapper').style.display = 'block';
+            document.getElementById('dse-lookup-wrapper').style.display = 'none';
+            nameInput.removeAttribute('required');
+            nameInput.value = '';
+            outletSection.style.display = 'none';
+        } else {
+            document.getElementById('standard-lookup-wrapper').style.display = 'none';
+            document.getElementById('dse-lookup-wrapper').style.display = 'block';
             
-            salesPositionSelect.value = '';
-            hideQuestion4();
-
-            const optionsToToggle = ['loc-kampus', 'loc-residential', 'loc-pasar', 'loc-others'];
-            if (roleSelect.value === 'dse_promotor') {
-                optionsToToggle.forEach(id => { if(document.getElementById(id)) document.getElementById(id).style.display = 'none'; });
-            } else {
-                optionsToToggle.forEach(id => { if(document.getElementById(id)) document.getElementById(id).style.display = 'block'; });
-            }
-            
-            if (roleSelect.value === 'internal_sales') {
-                salesPositionSection.style.display = 'block';
-                salesPositionSelect.setAttribute('required', 'true');
-            } else if (roleSelect.value !== "") {
-                salesPositionSection.style.display = 'none';
-                salesPositionSelect.removeAttribute('required');
-                showQuestion4();
-            }
-        }
-
-        function handlePositionChange() {
-            const salesPositionSelect = document.getElementById('sales-position-select');
-            hideQuestion4();
-            if (salesPositionSelect.value !== "") { showQuestion4(); }
-        }
-
-        function showQuestion4() {
-            const statusSelect = document.getElementById('sales-status-select').value;
-            const roleSelect = document.getElementById('role-select').value;
-            document.getElementById('question-4-section').style.display = 'block';
-
-            const nameInputWrapper = document.getElementById('dse-name-input-wrapper');
-            const nameInput = document.getElementById('dse-name-input');
-            const outletSection = document.getElementById('outlet-display-section');
-
-            if (statusSelect === 'non_sales' || roleSelect === 'internal_sales') {
-                document.getElementById('standard-lookup-wrapper').style.display = 'block';
-                document.getElementById('dse-lookup-wrapper').style.display = 'none';
+            if (roleSelect === 'dedicated_promotor') {
+                nameInputWrapper.style.display = 'none';
                 nameInput.removeAttribute('required');
                 nameInput.value = '';
+                outletSection.style.display = 'block';
+            } else {
+                nameInputWrapper.style.display = 'block';
+                nameInput.setAttribute('required', 'true');
                 outletSection.style.display = 'none';
-            } else {
-                document.getElementById('standard-lookup-wrapper').style.display = 'none';
-                document.getElementById('dse-lookup-wrapper').style.display = 'block';
-                
-                if (roleSelect === 'dedicated_promotor') {
-                    // FIX #1: Explicitly display the outlet container & hide the freetext name field
-                    nameInputWrapper.style.display = 'none';
-                    nameInput.removeAttribute('required');
-                    nameInput.value = '';
-                    outletSection.style.display = 'block';
-                } else {
-                    nameInputWrapper.style.display = 'block';
-                    nameInput.setAttribute('required', 'true');
-                    outletSection.style.display = 'none';
-                }
             }
-            loadTableData();
         }
+        loadTableData();
+    }
 
-        function hideQuestion4() {
-            document.getElementById('question-4-section').style.display = 'none';
-            document.getElementById('outlet-display-section').style.display = 'none';
-            document.getElementById('display-outlet-name').value = '';
-            document.getElementById('dse-name-input-wrapper').style.display = 'block';
-            dynamicExtractedDseName = "";
-            hideQuestion5(); 
-            if(tsStandard) { tsStandard.clear(); tsStandard.clearOptions(); }
-            if(tsDse) { tsDse.clear(); tsDse.clearOptions(); }
-            document.getElementById('dse-name-input').value = '';
+    function hideQuestion4() {
+        document.getElementById('question-4-section').style.display = 'none';
+        document.getElementById('outlet-display-section').style.display = 'none';
+        document.getElementById('display-outlet-name').value = '';
+        document.getElementById('dse-name-input-wrapper').style.display = 'block';
+        dynamicExtractedDseName = "";
+        hideQuestion5(); 
+        if(tsStandard) { tsStandard.clear(); tsStandard.clearOptions(); }
+        if(tsDse) { tsDse.clear(); tsDse.clearOptions(); }
+        document.getElementById('dse-name-input').value = '';
+    }
+
+    function checkDseCompletion() {
+        const role = document.getElementById('role-select').value;
+        const dseId = document.getElementById('dse-id-select').value;
+        const dseName = document.getElementById('dse-name-input').value.trim();
+        
+        if (role === 'dedicated_promotor') {
+            if (dseId) { showQuestion5(); } else { hideQuestion5(); }
+        } else {
+            if (dseId && dseName) { showQuestion5(); } else { hideQuestion5(); }
         }
+    }
 
-        function checkDseCompletion() {
-            const role = document.getElementById('role-select').value;
-            const dseId = document.getElementById('dse-id-select').value;
-            const dseName = document.getElementById('dse-name-input').value.trim();
-            
+    function showQuestion5() {
+        document.getElementById('activity-type-section').style.display = 'block';
+        document.getElementById('activity-type-select').setAttribute('required', 'true');
+    }
+
+    function hideQuestion5() {
+        const actSelect = document.getElementById('activity-type-select');
+        actSelect.removeAttribute('required');
+        actSelect.value = '';
+        document.getElementById('activity-type-section').style.display = 'none';
+        hideQuestion6(); 
+        document.getElementById('submit-section').style.display = 'none';
+    }
+
+    function handleActivityTypeChange() {
+        const actSelect = document.getElementById('activity-type-select');
+        const role = document.getElementById('role-select').value;
+        
+        hideQuestion6();
+        document.getElementById('submit-section').style.display = 'none';
+
+        if (actSelect.value === 'checkin') {
+            document.getElementById('submit-section').style.display = 'block';
+        } else if (actSelect.value === 'biometric') {
             if (role === 'dedicated_promotor') {
-                if (dseId) { showQuestion5(); } else { hideQuestion5(); }
-            } else {
-                if (dseId && dseName) { showQuestion5(); } else { hideQuestion5(); }
-            }
-        }
-
-        function showQuestion5() {
-            document.getElementById('activity-type-section').style.display = 'block';
-            document.getElementById('activity-type-select').setAttribute('required', 'true');
-        }
-
-        function hideQuestion5() {
-            const actSelect = document.getElementById('activity-type-select');
-            actSelect.removeAttribute('required');
-            actSelect.value = '';
-            document.getElementById('activity-type-section').style.display = 'none';
-            hideQuestion6(); 
-            document.getElementById('submit-section').style.display = 'none';
-        }
-
-        function handleActivityTypeChange() {
-            const actSelect = document.getElementById('activity-type-select');
-            const role = document.getElementById('role-select').value;
-            
-            hideQuestion6();
-            document.getElementById('submit-section').style.display = 'none';
-
-            if (actSelect.value === 'checkin') {
-                document.getElementById('submit-section').style.display = 'block';
-            } else if (actSelect.value === 'biometric') {
-                // FIX #2: Skip location steps entirely for dedicated_promotor role type
-                if (role === 'dedicated_promotor') {
-                    document.getElementById('msisdn-section').style.display = 'block';
-                    const firstMsisdnInput = document.getElementById('msisdn-input-1');
-                    if (firstMsisdnInput) firstMsisdnInput.setAttribute('required', 'true');
-                    document.getElementById('submit-section').style.display = 'block';
-                } else {
-                    showQuestion6();
-                }
-            }
-        }
-
-        function showQuestion6() {
-            document.getElementById('location-type-section').style.display = 'block';
-            document.getElementById('location-type-select').setAttribute('required', 'true');
-        }
-
-        function hideQuestion6() {
-            document.getElementById('location-type-section').style.display = 'none';
-            document.getElementById('location-type-select').removeAttribute('required');
-            document.getElementById('location-type-select').value = '';
-            document.getElementById('location-detail-container').style.display = 'none';
-            
-            document.getElementById('wrapper-nama-kegiatan').style.display = 'none';
-            document.getElementById('input-nama-kegiatan').removeAttribute('required');
-            document.getElementById('input-nama-kegiatan').value = '';
-
-            document.getElementById('msisdn-section').style.display = 'none';
-            const baseInput = document.getElementById('msisdn-input-1');
-            if (baseInput) { baseInput.removeAttribute('required'); baseInput.value = '62'; }
-            
-            document.querySelectorAll('#msisdn-fields-container .msisdn-row').forEach(row => { 
-                if (row.getAttribute('data-index') !== "1") row.remove(); 
-            });
-            updateMsisdnButtonState();
-
-            document.querySelectorAll('.location-detail-field').forEach(field => {
-                field.style.display = 'none';
-                field.querySelector('input').removeAttribute('required');
-                field.querySelector('input').value = '';
-            });
-        }
-
-        function handleLocationTypeChange() {
-            const selectValue = document.getElementById('location-type-select').value;
-            const detailContainer = document.getElementById('location-detail-container');
-            const namaKegiatanWrapper = document.getElementById('wrapper-nama-kegiatan');
-            const namaKegiatanInput = document.getElementById('input-nama-kegiatan');
-            const msisdnSection = document.getElementById('msisdn-section');
-            const firstMsisdnInput = document.getElementById('msisdn-input-1');
-            const submitSection = document.getElementById('submit-section');
-            
-            if (selectValue) {
-                detailContainer.style.display = 'block';
-                msisdnSection.style.display = 'block';
+                document.getElementById('msisdn-section').style.display = 'block';
+                const firstMsisdnInput = document.getElementById('msisdn-input-1');
                 if (firstMsisdnInput) firstMsisdnInput.setAttribute('required', 'true');
-                submitSection.style.display = 'block';
-            }
-
-            document.querySelectorAll('.location-detail-field').forEach(field => {
-                field.style.display = 'none';
-                field.querySelector('input').removeAttribute('required');
-            });
-
-            const activeWrapper = document.getElementById(`wrapper-${selectValue}`);
-            if (activeWrapper) {
-                activeWrapper.style.display = 'block';
-                activeWrapper.querySelector('input').setAttribute('required', 'true');
-            }
-
-            if (selectValue && selectValue !== 'kro') {
-                namaKegiatanWrapper.style.display = 'block';
-                namaKegiatanInput.setAttribute('required', 'true');
+                document.getElementById('submit-section').style.display = 'block';
             } else {
-                namaKegiatanWrapper.style.display = 'none';
-                namaKegiatanInput.removeAttribute('required');
-                namaKegiatanInput.value = '';
+                showQuestion6();
             }
         }
+    }
 
-        function addMsisdnField() {
-            const container = document.getElementById('msisdn-fields-container');
-            const currentRows = container.getElementsByClassName('msisdn-row');
-            const currentIndices = Array.from(currentRows).map(row => parseInt(row.getAttribute('data-index')));
-            let nextIndex = 1;
-            for (let i = 1; i <= 5; i++) {
-                if (!currentIndices.includes(i)) { nextIndex = i; break; }
-            }
+    function showQuestion6() {
+        document.getElementById('location-type-section').style.display = 'block';
+        document.getElementById('location-type-select').setAttribute('required', 'true');
+    }
 
-            if (currentRows.length < MAX_MSISDN) {
-                const rowDiv = document.createElement('div');
-                rowDiv.className = 'msisdn-row';
-                rowDiv.setAttribute('data-index', nextIndex);
-                rowDiv.innerHTML = `
-                    <span class="msisdn-prefix">MSISDN ${nextIndex}</span>
-                    <input type="text" id="msisdn-input-${nextIndex}" name="msisdn_${nextIndex}" class="form-control" value="62" inputmode="numeric" pattern="[0-9]*" oninput="validateMsisdnInput(this)" required>
-                    <button type="button" class="btn-remove" onclick="removeMsisdnField(this)">✕</button>
-                `;
-                container.appendChild(rowDiv);
-                updateMsisdnButtonState();
-            }
+    function hideQuestion6() {
+        document.getElementById('location-type-section').style.display = 'none';
+        document.getElementById('location-type-select').removeAttribute('required');
+        document.getElementById('location-type-select').value = '';
+        document.getElementById('location-detail-container').style.display = 'none';
+        
+        document.getElementById('wrapper-nama-kegiatan').style.display = 'none';
+        document.getElementById('input-nama-kegiatan').removeAttribute('required');
+        document.getElementById('input-nama-kegiatan').value = '';
+
+        document.getElementById('msisdn-section').style.display = 'none';
+        const baseInput = document.getElementById('msisdn-input-1');
+        if (baseInput) { baseInput.removeAttribute('required'); baseInput.value = '62'; }
+        
+        document.querySelectorAll('#msisdn-fields-container .msisdn-row').forEach(row => { 
+            if (row.getAttribute('data-index') !== "1") row.remove(); 
+        });
+        updateMsisdnButtonState();
+
+        document.querySelectorAll('.location-detail-field').forEach(field => {
+            field.style.display = 'none';
+            field.querySelector('input').removeAttribute('required');
+            field.querySelector('input').value = '';
+        });
+    }
+
+    function handleLocationTypeChange() {
+        const selectValue = document.getElementById('location-type-select').value;
+        const detailContainer = document.getElementById('location-detail-container');
+        const namaKegiatanWrapper = document.getElementById('wrapper-nama-kegiatan');
+        const namaKegiatanInput = document.getElementById('input-nama-kegiatan');
+        const msisdnSection = document.getElementById('msisdn-section');
+        const firstMsisdnInput = document.getElementById('msisdn-input-1');
+        const submitSection = document.getElementById('submit-section');
+        
+        if (selectValue) {
+            detailContainer.style.display = 'block';
+            msisdnSection.style.display = 'block';
+            if (firstMsisdnInput) firstMsisdnInput.setAttribute('required', 'true');
+            submitSection.style.display = 'block';
         }
 
-        function removeMsisdnField(button) { button.parentElement.remove(); updateMsisdnButtonState(); }
+        document.querySelectorAll('.location-detail-field').forEach(field => {
+            field.style.display = 'none';
+            field.querySelector('input').removeAttribute('required');
+        });
 
-        function updateMsisdnButtonState() {
-            const currentFieldsCount = document.querySelectorAll('#msisdn-fields-container .msisdn-row').length;
-            document.getElementById('btn-add-msisdn').style.display = currentFieldsCount >= MAX_MSISDN ? 'none' : 'inline-block';
-            document.getElementById('msisdn-limit-msg').style.display = currentFieldsCount >= MAX_MSISDN ? 'block' : 'none';
+        const activeWrapper = document.getElementById(`wrapper-${selectValue}`);
+        if (activeWrapper) {
+            activeWrapper.style.display = 'block';
+            activeWrapper.querySelector('input').setAttribute('required', 'true');
         }
 
-        function loadTableData() {
-            const selectedBrandRadio = document.querySelector('input[name="brand"]:checked');
-            const statusSelect = document.getElementById('sales-status-select');
-            if (!selectedBrandRadio || !statusSelect) return;
-            
-            const selectedBrand = selectedBrandRadio.value.toUpperCase(); 
-            const selectedStatus = statusSelect.value;
-            const selectedRole = document.getElementById('role-select').value;
-            const selectedPosition = document.getElementById('sales-position-select').value;
-
-            if (selectedStatus === 'non_sales' && tsStandard) {
-                tsStandard.clearOptions();
-                document.querySelectorAll('#non-sales-table tbody tr').forEach(row => {
-                    const cells = row.querySelectorAll('td');
-                    tsStandard.addOption({ value: `${cells[0].textContent.trim()} - ${cells[1].textContent.trim()}`, text: `${cells[0].textContent.trim()} - ${cells[1].textContent.trim()}`, employeeName: cells[1].textContent.trim() });
-                });
-                tsStandard.refreshOptions(false);
-            } 
-            else if (selectedRole === 'dse_promotor' && tsDse) {
-                tsDse.clearOptions();
-                document.querySelectorAll('#dse-promotor-table tbody tr').forEach(row => {
-                    const cells = row.querySelectorAll('td');
-                    if (cells[0].textContent.trim().toUpperCase() === selectedBrand || cells[0].textContent.trim().toUpperCase() === 'IOH') {
-                        tsDse.addOption({ value: cells[1].textContent.trim(), text: cells[1].textContent.trim() });
-                    }
-                });
-                tsDse.refreshOptions(false);
-            }
-            else if (selectedRole === 'dse_all' && tsDse) {
-                tsDse.clearOptions();
-                document.querySelectorAll('#dse-data-table tbody tr').forEach(row => {
-                    const cells = row.querySelectorAll('td');
-                    if (cells[0].textContent.trim().toUpperCase() === selectedBrand || cells[0].textContent.trim().toUpperCase() === 'IOH') {
-                        tsDse.addOption({ value: cells[1].textContent.trim(), text: cells[1].textContent.trim() });
-                    }
-                });
-                tsDse.refreshOptions(false);
-            }
-            else if (selectedRole === 'dedicated_promotor' && tsDse) {
-                tsDse.clearOptions();
-                document.querySelectorAll('#dse-dedicated-promotor-table tbody tr').forEach(row => {
-                    const cells = row.querySelectorAll('td');
-                    if (cells[0].textContent.trim().toUpperCase() === selectedBrand || cells[0].textContent.trim().toUpperCase() === 'IOH') {
-                        tsDse.addOption({ 
-                            value: cells[1].textContent.trim(), 
-                            text: `${cells[1].textContent.trim()} - ${cells[2].textContent.trim()}`, 
-                            dseRealName: cells[2].textContent.trim(), 
-                            outletName: cells[3].textContent.trim() 
-                        });
-                    }
-                });
-                tsDse.refreshOptions(false);
-            }
-            else if (selectedRole === 'internal_sales' && tsStandard) {
-                tsStandard.clearOptions();
-                document.querySelectorAll('#employee-data-table tbody tr').forEach(row => {
-                    const cells = row.querySelectorAll('td');
-                    const tBrand = cells[0].textContent.trim().toUpperCase();
-                    const tPos = cells[1].textContent.trim().toLowerCase();
-                    const brandMatches = (tBrand === selectedBrand || tBrand === 'IOH');
-                    const posMatches = selectedPosition === 'cse_rse' ? (tPos === 'cse' || tPos === 'rse') : (tPos === selectedPosition.toLowerCase());
-                    
-                    if (brandMatches && posMatches) {
-                        tsStandard.addOption({ value: `${cells[2].textContent.trim()} - ${cells[3].textContent.trim()}`, text: `${cells[2].textContent.trim()} - ${cells[3].textContent.trim()}`, employeeName: cells[3].textContent.trim() });
-                    }
-                });
-                tsStandard.refreshOptions(false);
-            }
+        if (selectValue && selectValue !== 'kro') {
+            namaKegiatanWrapper.style.display = 'block';
+            namaKegiatanInput.setAttribute('required', 'true');
+        } else {
+            namaKegiatanWrapper.style.display = 'none';
+            namaKegiatanInput.removeAttribute('required');
+            namaKegiatanInput.value = '';
         }
-    </script>
+    }
+
+    function addMsisdnField() {
+        const container = document.getElementById('msisdn-fields-container');
+        const currentRows = container.getElementsByClassName('msisdn-row');
+        const currentIndices = Array.from(currentRows).map(row => parseInt(row.getAttribute('data-index')));
+        let nextIndex = 1;
+        for (let i = 1; i <= 5; i++) {
+            if (!currentIndices.includes(i)) { nextIndex = i; break; }
+        }
+
+        if (currentRows.length < MAX_MSISDN) {
+            const rowDiv = document.createElement('div');
+            rowDiv.className = 'msisdn-row';
+            rowDiv.setAttribute('data-index', nextIndex);
+            rowDiv.innerHTML = `
+                <span class="msisdn-prefix">MSISDN ${nextIndex}</span>
+                <input type="text" id="msisdn-input-${nextIndex}" name="msisdn_${nextIndex}" class="form-control" value="62" inputmode="numeric" pattern="[0-9]*" oninput="validateMsisdnInput(this)" required>
+                <button type="button" class="btn-remove" onclick="removeMsisdnField(this)">✕</button>
+            `;
+            container.appendChild(rowDiv);
+            updateMsisdnButtonState();
+        }
+    }
+
+    function removeMsisdnField(button) { button.parentElement.remove(); updateMsisdnButtonState(); }
+
+    function updateMsisdnButtonState() {
+        const currentFieldsCount = document.querySelectorAll('#msisdn-fields-container .msisdn-row').length;
+        document.getElementById('btn-add-msisdn').style.display = currentFieldsCount >= MAX_MSISDN ? 'none' : 'inline-block';
+        document.getElementById('msisdn-limit-msg').style.display = currentFieldsCount >= MAX_MSISDN ? 'block' : 'none';
+    }
+
+    function loadTableData() {
+        const selectedBrandRadio = document.querySelector('input[name="brand"]:checked');
+        const statusSelect = document.getElementById('sales-status-select');
+        if (!selectedBrandRadio || !statusSelect) return;
+        
+        const selectedBrand = selectedBrandRadio.value.toUpperCase(); 
+        const selectedStatus = statusSelect.value;
+        const selectedRole = document.getElementById('role-select').value;
+        const selectedPosition = document.getElementById('sales-position-select').value;
+
+        if (selectedStatus === 'non_sales' && tsStandard) {
+            tsStandard.clearOptions();
+            tsStandard.addOptions(dataCache.nonSales);
+            tsStandard.refreshOptions(false);
+        } 
+        else if (selectedRole === 'dse_promotor' && tsDse) {
+            tsDse.clearOptions();
+            const filtered = dataCache.dsePromotor.filter(opt => opt.brand === selectedBrand || opt.brand === 'IOH');
+            tsDse.addOptions(filtered);
+            tsDse.refreshOptions(false);
+        }
+        else if (selectedRole === 'dse_all' && tsDse) {
+            tsDse.clearOptions();
+            const filtered = dataCache.dseAll.filter(opt => opt.brand === selectedBrand || opt.brand === 'IOH');
+            tsDse.addOptions(filtered);
+            tsDse.refreshOptions(false);
+        }
+        else if (selectedRole === 'dedicated_promotor' && tsDse) {
+            tsDse.clearOptions();
+            const filtered = dataCache.dseDedicated.filter(opt => opt.brand === selectedBrand || opt.brand === 'IOH');
+            tsDse.addOptions(filtered);
+            tsDse.refreshOptions(false);
+        }
+        else if (selectedRole === 'internal_sales' && tsStandard) {
+            tsStandard.clearOptions();
+            const targetPos = selectedPosition.toLowerCase();
+            const filtered = dataCache.internalSales.filter(opt => {
+                const brandMatches = (opt.brand === selectedBrand || opt.brand === 'IOH');
+                const posMatches = selectedPosition === 'cse_rse' 
+                    ? (opt.position === 'cse' || opt.position === 'rse') 
+                    : (opt.position === targetPos);
+                return brandMatches && posMatches;
+            });
+            tsStandard.addOptions(filtered);
+            tsStandard.refreshOptions(false);
+        }
+    }
+</script>
 </body>
 </html>
