@@ -1398,13 +1398,9 @@
             formObject['nama_kegiatan'] = document.getElementById('input-nama-kegiatan').value;
 
             for (let i = 1; i <= 5; i++) {
-                const inputEl = document.getElementById(`msisdn-input-${i}`);
-                const msisdnValue = inputEl ? inputEl.value.trim() : "";
-    
-                // Set both key formats to guarantee compatibility with your spreadsheet headers
-                formObject[`msisdn_${i}`] = msisdnValue;
-                formObject[`msisdn${i}`] = msisdnValue;
-            }
+                    const inputEl = document.getElementById(`msisdn-input-${i}`);
+                    formObject[`msisdn${i}`] = inputEl ? inputEl.value.trim() : "";
+                }
 
             formObject['latitude'] = lat;
             formObject['longitude'] = lng;
